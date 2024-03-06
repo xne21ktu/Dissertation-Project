@@ -73,7 +73,14 @@ eyespots %>%
 # Design 1 had 80% chance of predation, 2 had a 57% chance and 3 had a 54% chance
 # Can see number of missing dummies for each design
 
-  
+eyespots %>% 
+  group_by(location, predated) %>% 
+  summarise(n = n()) %>%
+  mutate(prob_obs = n/sum(n))
+
+#Can see that location 2 (69%) had a higher level of predation than location 1 (59%)
+
+
 #_________________________----
 # PLOTS ----
 
@@ -81,6 +88,8 @@ eyespots %>%
   ggplot(aes(x=design, fill=predated))+
   geom_bar(position=position_dodge())+
   coord_flip()
+
+
 
 
 
