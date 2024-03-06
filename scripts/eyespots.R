@@ -18,6 +18,7 @@ library(janitor)# clean variable names
 # IMPORT DATA ----
 
 eyespots <- read_csv("data/Experiment 1.csv")
+eyespots_filtered <- read_csv("data/Experiment 1 edited.csv")
 
 #_________________________----
 # CHECK DATA ----
@@ -90,6 +91,10 @@ eyespots %>%
   coord_flip()
 
 
+#________________________----
+# MODEL ----
 
+
+  
 
 
