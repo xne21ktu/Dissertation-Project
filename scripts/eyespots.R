@@ -48,7 +48,7 @@ eyespots_filtered %>%
   sum()
 
 
-eyespots_filtered$collection <- as_factor(eyespots_filtered$collection)
+
 eyespots_filtered$design <- as_factor(eyespots_filtered$design)
 eyespots_filtered$predated <- as_factor(eyespots_filtered$predated)
 eyespots_filtered$location <- as_factor(eyespots_filtered$location)
@@ -56,7 +56,7 @@ eyespots_filtered$weather <- as_factor(eyespots_filtered$weather)
 eyespots_filtered$slug <- as_factor(eyespots_filtered$slug)
 # converts selected columns into a factor so they can be used in analyses
 
-summary(eyespots)
+summary(eyespots_filtered)
 # check for typos - by looking at impossible values
 # quick summary
 
@@ -126,12 +126,18 @@ eyespots_location2 %>%
 # clear increase in predation levels over the experiment at location 2 - indicating
 # a stronger effect of learning
 
+eyespots_filtered %>% 
+  ggplot(aes(x=weather,y=predated, fill=predated))+
+  geom_bar(position="stack", stat="identity")+
+  coord_flip()
+# shows predation/survival rate during each type of weather - due to the small sample size,
+# I don't think this is that useful. 
 
 
 #________________________----
 # MODEL ----
 
-eyespots_model <- glm(predated~collection+design+date+temperature+slug, data = eyespots_filtered,
+eyespots_model <- glm(predated~collection+design+temperature+slug+weather, data = eyespots_filtered,
                       family = "binomial"(link=logit))
 
   
