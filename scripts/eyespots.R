@@ -3,7 +3,7 @@
 library(tidyverse) # tidy data packages.
 library(kableExtra) # add ons for summary tables.
 library(janitor)# clean variable names
-
+library(emmeans) # conversion of log odds to probability
 #_________________________----
 # HYPOTHESES ----
 
@@ -48,7 +48,7 @@ eyespots_filtered %>%
   sum()
 
 
-
+eyespots_filtered$collection <- as_factor(eyespots_filtered$collection)
 eyespots_filtered$design <- as_factor(eyespots_filtered$design)
 eyespots_filtered$predated <- as_factor(eyespots_filtered$predated)
 eyespots_filtered$location <- as_factor(eyespots_filtered$location)
@@ -112,12 +112,19 @@ eyespots_filtered2 <- filter(.data = eyespots_filtered, predated == "1")
 eyespots_location1 <- filter(.data = eyespots_filtered2, location == "1")
 eyespots_location2 <- filter(.data = eyespots_filtered2, location == "2")
 
+head(eyespots_location1)
+
+eyespots_location1$predated <- as.numeric(as.character(eyespots_location1$predated))
+
 eyespots_location1 %>% 
   ggplot(aes(x=collection,y=predated))+
-  geom_bar(stat="identity")
+  geom_bar(stat = "identity")
 
 # not a clear pattern of change in predation levels at location 1,
 # although the last collection shows the highest level of predation
+
+eyespots_location2$predated <- as.numeric(as.character(eyespots_location2$predated))
+
   
 eyespots_location2 %>% 
   ggplot(aes(x=collection,y=predated))+
@@ -137,10 +144,21 @@ eyespots_filtered %>%
 #________________________----
 # MODEL ----
 
-eyespots_model <- glm(predated~collection+design+temperature+slug+weather, data = eyespots_filtered,
+eyespots_model <- glm(predated~design, data = eyespots_filtered,
                       family = "binomial"(link=logit))
 
-  
 summary(eyespots_model)
+
+eyespots_model %>% 
+  broom::tidy(conf.int=T)
+
+emmeans::emmeans(eyespots_model, specs=~design, type="response")
+
+eyespots_model2 <- glm(predated~collection+design+temperature+weather+location, data = eyespots_filtered,
+                      family = "binomial"(link=logit))
+
+summary(eyespots_model2)
+
+
 
 
