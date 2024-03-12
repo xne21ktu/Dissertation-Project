@@ -3,8 +3,9 @@
 library(tidyverse) # tidy data packages.
 library(kableExtra) # add ons for summary tables.
 library(janitor)# clean variable names
-library(emmeans) # conversion of log odds to probability
-library(car)
+library(car) # for vif function - looks at correlations
+library(ggeffects) # for ggpredict function to plot model
+library(performance) # model assumption checking
 #_________________________----
 # HYPOTHESES ----
 
@@ -144,24 +145,64 @@ eyespots_filtered %>%
 
 #________________________----
 # MODEL ----
-# make a null model - compare AIC
-eyespots_model <- glm(predated~design, data = eyespots_filtered,
+
+ef_numcol <- eyespots_filtered %>% mutate(collection = as.numeric(collection))
+# converting collection column into numeric data type as its more suitable for model
+
+
+eyespots_model0 <- glm(predated~1, data = eyespots_filtered,
                       family = "binomial"(link=logit))
 
-summary(eyespots_model)
+summary(eyespots_model0)
 
-eyespots_model %>% 
-  broom::tidy(conf.int=T)
+# null model which will be used to compare AIC scores with more complex models
+# AIC = 1359.4, df = 1050 (remember AIC will decrease with increase in df)
 
-emmeans::emmeans(eyespots_model, specs=~design, type="response")
-ef <- eyespots_filtered %>% mutate(collection = as.numeric(collection))
-eyespots_model2 <- glm(predated~collection+design+location+design+weather+temperature, data = ef,
+eyespots_model1 <- glm(predated~design, data = eyespots_filtered,
                       family = "binomial"(link=logit))
+
+summary(eyespots_model1)
+# AIC decreases to 1300.7
+
+eyespots_model2 <- glm(predated~collection+design+location+temperature, data = ef_numcol,
+                      family = "binomial"(link=logit))
+
+# date is not used because it correlates with collection which is included instead
+# removed weather from model because of its vif of 25 and beacause in this data it does not,
+# provide practical information
 
 summary(eyespots_model2)
-eyespo2data <- ggpredict(eyespots_model2, terms = c("collection","design"))
-plot(eyespo2data)
-vif(eyespots_model2)
-#test without interaction
 
-# ggpredict to plot model instead of converting to prob
+
+vif(eyespots_model2)
+#test without interaction first
+
+eyespots_model3 <- glm(predated~collection*design+design+collection+location+temperature, data = ef_numcol,
+                      family = "binomial"(link=logit))
+summary(eyespots_model3)
+# Does not seem to be an interaction between collection and design
+
+eyespotm3_des <- ggpredict(eyespots_model3, terms = c("collection","design"))
+
+plot(eyespotm3_des)
+# Shows that learning has the same effect across each design
+
+vif(eyespots_model3)
+# should get rid of interaction term between collection and design
+
+eyespots_model4 <- glm(predated~collection*location+design+collection+location+temperature, data = ef_numcol,
+                       family = "binomial"(link=logit))
+
+summary(eyespots_model4)
+# collection loses its power
+
+eyespotm4_loc <- ggpredict(eyespots_model4, terms = c("collection","location"))
+
+plot(eyespotm4_loc)
+# Does show a difference in learning between the two locations
+
+vif(eyespots_model4)
+
+performance::check_model(eyespots_model4)
+
+
