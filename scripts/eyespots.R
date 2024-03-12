@@ -4,6 +4,7 @@ library(tidyverse) # tidy data packages.
 library(kableExtra) # add ons for summary tables.
 library(janitor)# clean variable names
 library(emmeans) # conversion of log odds to probability
+library(car)
 #_________________________----
 # HYPOTHESES ----
 
@@ -129,7 +130,7 @@ eyespots_location2$predated <- as.numeric(as.character(eyespots_location2$predat
 eyespots_location2 %>% 
   ggplot(aes(x=collection,y=predated))+
   geom_bar(stat = "identity")
-
+# maybe use point with se
 # clear increase in predation levels over the experiment at location 2 - indicating
 # a stronger effect of learning
 
@@ -143,7 +144,7 @@ eyespots_filtered %>%
 
 #________________________----
 # MODEL ----
-
+# make a null model - compare AIC
 eyespots_model <- glm(predated~design, data = eyespots_filtered,
                       family = "binomial"(link=logit))
 
@@ -153,12 +154,14 @@ eyespots_model %>%
   broom::tidy(conf.int=T)
 
 emmeans::emmeans(eyespots_model, specs=~design, type="response")
-
-eyespots_model2 <- glm(predated~collection+design+temperature+weather+location, data = eyespots_filtered,
+ef <- eyespots_filtered %>% mutate(collection = as.numeric(collection))
+eyespots_model2 <- glm(predated~collection+design+location+design+weather+temperature, data = ef,
                       family = "binomial"(link=logit))
 
 summary(eyespots_model2)
+eyespo2data <- ggpredict(eyespots_model2, terms = c("collection","design"))
+plot(eyespo2data)
+vif(eyespots_model2)
+#test without interaction
 
-
-
-
+# ggpredict to plot model instead of converting to prob
