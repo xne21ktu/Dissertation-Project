@@ -97,24 +97,16 @@ eyespots_location1$predated <- as.numeric(as.character(eyespots_location1$predat
 eyespots_location2$predated <- as.numeric(as.character(eyespots_location2$predated))
 
 eyespots_location1 %>% 
-  group_by(location, predated) %>% 
-  summarise(n = n()) %>%
-  mutate(prob_obs = n/sum(n))
-
-eyespots_location2 %>% 
-  group_by(location, predated) %>% 
-  summarise(n = n()) %>%
-  mutate(prob_obs = n/sum(n))
-
-eyespots_location1 %>% 
   group_by(design, predated) %>% 
   summarise(n = n()) %>%
   mutate(prob_obs = n/sum(n))
+#predation rates: 1 = 80%, 2 = 53%, 3 = 48%
 
 eyespots_location2 %>% 
   group_by(design, predated) %>% 
   summarise(n = n()) %>%
   mutate(prob_obs = n/sum(n))
+# 1 = 83%, 2 = 68%, 3 = 65%
 
 #_________________________----
 # PLOTS ----
@@ -194,14 +186,6 @@ summary(eyespots_model2)
 vif(eyespots_model2)
 #test without interaction first
 
-df_location1 <- filter(.data = ef_numcol, location == "1")
-df_location2 <- filter(.data = ef_numcol, location == "2")
-
-
-model_loc1 <- glm(predated~collection+design+location+temperature, data = df_location1,
-                  family = "binomial"(link=logit))
-summary(model_loc1)
-
 eyespots_model3 <- glm(predated~collection*design+design+collection+location+temperature, data = ef_numcol,
                       family = "binomial"(link=logit))
 summary(eyespots_model3)
@@ -229,5 +213,46 @@ plot(eyespotm4_loc)
 vif(eyespots_model4)
 
 performance::check_model(eyespots_model4)
+performance::check_model(eyespots_model4, check = "binned_residuals")
 
+
+# creating a model for each location
+
+df_location1 <- filter(.data = ef_numcol, location == "1")
+df_location2 <- filter(.data = ef_numcol, location == "2")
+
+
+model_loc1 <- glm(predated~collection+design+temperature, data = df_location1,
+                  family = "binomial"(link=logit))
+summary(model_loc1)
+
+vif(model_loc1)
+
+# collection has lost its power
+
+performance::check_model(model_loc1, check = "binned_residuals")
+
+ml1_temp <- ggpredict(model_loc1, terms = c("temperature"))
+
+plot(ml1_temp)
+
+ml1_coldes <- ggpredict(model_loc1, terms = c("collection","design"))
+
+plot(ml1_coldes)
+
+model_loc2 <- glm(predated~collection+design+temperature, data = df_location2,
+                  family = "binomial"(link=logit))
+summary(model_loc2)
+
+vif(model_loc2)
+
+performance::check_model(model_loc2, check = "binned_residuals")
+
+ml2_temp <- ggpredict(model_loc2, terms = c("temperature"))
+
+plot(ml2_temp)
+
+ml2_coldes <- ggpredict(model_loc2, terms = c("collection","design"))
+
+plot(ml2_coldes)
 
