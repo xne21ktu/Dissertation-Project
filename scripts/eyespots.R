@@ -173,9 +173,8 @@ eyespots_model1 <- glm(predated~design, data = eyespots_filtered,
 summary(eyespots_model1)
 # AIC decreases to 1300.7
 
-eyespots_model2 <- glm(predated~collection+design+location+temperature, data = ef_numcol,
-                      family = "binomial"(link=logit))
-
+eyespots_model2 <- glm(predated~design+collection+location+temperature, data = ef_numcol,
+                       family = "binomial"(link=logit))
 # date is not used because it correlates with collection which is included instead
 # removed weather from model because of its vif of 25 and beacause in this data it does not,
 # provide practical information
@@ -212,9 +211,10 @@ plot(eyespotm4_loc)
 
 vif(eyespots_model4)
 
+drop1(eyespots, test="Chisq")
+
 performance::check_model(eyespots_model4)
 performance::check_model(eyespots_model4, check = "binned_residuals")
-
 
 # creating a model for each location
 
@@ -256,3 +256,79 @@ ml2_coldes <- ggpredict(model_loc2, terms = c("collection","design"))
 
 plot(ml2_coldes)
 
+#________________________----
+# PREDICTIONS ----
+
+emmeans::emmeans(eyespots_model4, specs=~temperature, type="response")
+emmeans::emmeans(eyespots_model4, specs=~design, type="response")
+
+
+augment_glm <- function(mod, predict = NULL){
+  fam <- family(mod)
+  ilink <- fam$linkinv
+  
+  broom::augment(mod, newdata = predict, se_fit=T)%>%
+    mutate(.lower = ilink(.fitted - 1.96*.se.fit),
+           .upper = ilink(.fitted + 1.96*.se.fit), 
+           .fitted=ilink(.fitted))
+}
+
+augment_glm(eyespots_model4)
+
+augmented_data <- augment_glm(eyespots_model4)
+
+# Filter data by design type
+design1_data <- filter(augmented_data, design == 1)
+design2_data <- filter(augmented_data, design == 2)
+design3_data <- filter(augmented_data, design == 3)
+
+# Plot predicted probabilities for each design type
+ggplot() +
+  geom_line(data = design1_data, aes(x = collection, y = .fitted), color = "blue") +
+  geom_ribbon(data = design1_data, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "blue") +
+  geom_line(data = design2_data, aes(x = collection, y = .fitted), color = "red") +
+  geom_ribbon(data = design2_data, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "red") +
+  geom_line(data = design3_data, aes(x = collection, y = .fitted), color = "green") +
+  geom_ribbon(data = design3_data, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "green") +
+  labs(x = "Time", y = "Probability of Predation", color = "Design Type") +
+  scale_color_manual(values = c("blue", "red", "green")) +
+  theme_minimal()
+
+augmented_loc1 <- augment_glm(model_loc1)
+
+# Filter data by design type
+design1_loc1 <- filter(augmented_loc1, design == 1)
+design2_loc1 <- filter(augmented_loc1, design == 2)
+design3_loc1 <- filter(augmented_loc1, design == 3)
+
+# Plot predicted probabilities for each design type
+ggplot() +
+  geom_line(data = design1_loc1, aes(x = collection, y = .fitted), color = "blue") +
+  geom_ribbon(data = design1_loc1, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "blue") +
+  geom_line(data = design2_loc1, aes(x = collection, y = .fitted), color = "red") +
+  geom_ribbon(data = design2_loc1, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "red") +
+  geom_line(data = design3_loc1, aes(x = collection, y = .fitted), color = "green") +
+  geom_ribbon(data = design3_loc1, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "green") +
+  labs(x = "Time", y = "Probability of Predation", color = "Design Type") +
+  scale_color_manual(values = c("blue", "red", "green")) +
+  theme_minimal()
+
+
+augmented_loc2 <- augment_glm(model_loc2)
+
+# Filter data by design type
+design1_loc2 <- filter(augmented_loc2, design == 1)
+design2_loc2 <- filter(augmented_loc2, design == 2)
+design3_loc2 <- filter(augmented_loc2, design == 3)
+
+# Plot predicted probabilities for each design type
+ggplot() +
+  geom_line(data = design1_loc2, aes(x = collection, y = .fitted), color = "blue") +
+  geom_ribbon(data = design1_loc2, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "blue") +
+  geom_line(data = design2_loc2, aes(x = collection, y = .fitted), color = "red") +
+  geom_ribbon(data = design2_loc2, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "red") +
+  geom_line(data = design3_loc2, aes(x = collection, y = .fitted), color = "green") +
+  geom_ribbon(data = design3_loc2, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "green") +
+  labs(x = "Time", y = "Probability of Predation", color = "Design Type") +
+  scale_color_manual(values = c("blue", "red", "green")) +
+  theme_minimal()
