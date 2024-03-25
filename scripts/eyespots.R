@@ -86,14 +86,38 @@ eyespots_filtered %>%
 
 #Can see that location 2 had a higher level of predation (72%) than location 1 (60%)
 
+eyespots_predated <- filter(.data = eyespots_filtered, predated == "1")
+eyespots_location1 <- filter(.data = eyespots_filtered, location == "1")
+eyespots_location2 <- filter(.data = eyespots_filtered, location == "2")
+
+head(eyespots_location1)
+head(eyespots_location2)
+
+eyespots_location1$predated <- as.numeric(as.character(eyespots_location1$predated))
+eyespots_location2$predated <- as.numeric(as.character(eyespots_location2$predated))
+
+eyespots_location1 %>% 
+  group_by(location, predated) %>% 
+  summarise(n = n()) %>%
+  mutate(prob_obs = n/sum(n))
+
+eyespots_location2 %>% 
+  group_by(location, predated) %>% 
+  summarise(n = n()) %>%
+  mutate(prob_obs = n/sum(n))
+
+eyespots_location1 %>% 
+  group_by(design, predated) %>% 
+  summarise(n = n()) %>%
+  mutate(prob_obs = n/sum(n))
+
+eyespots_location2 %>% 
+  group_by(design, predated) %>% 
+  summarise(n = n()) %>%
+  mutate(prob_obs = n/sum(n))
 
 #_________________________----
 # PLOTS ----
-
-eyespots_filtered %>% 
-  ggplot(aes(x=design, fill=predated))+
-  geom_bar(position=position_dodge())+
-  coord_flip()
 
 eyespots_filtered %>% 
   ggplot(aes(x=design,y=predated, fill=predated))+
@@ -110,13 +134,8 @@ eyespots_filtered %>%
 # Can see that location 1 has a lower predation rate but a larger sample size than location 2,
 # which again needs to be mentioned in discussion
 
-eyespots_filtered2 <- filter(.data = eyespots_filtered, predated == "1")
-eyespots_location1 <- filter(.data = eyespots_filtered2, location == "1")
-eyespots_location2 <- filter(.data = eyespots_filtered2, location == "2")
-
-head(eyespots_location1)
-
-eyespots_location1$predated <- as.numeric(as.character(eyespots_location1$predated))
+eyespots_location1p <- filter(.data = eyespots_predated, location == "1")
+eyespots_location2p <- filter(.data = eyespots_predated, location == "2")
 
 eyespots_location1 %>% 
   ggplot(aes(x=collection,y=predated))+
@@ -124,8 +143,6 @@ eyespots_location1 %>%
 
 # not a clear pattern of change in predation levels at location 1,
 # although the last collection shows the highest level of predation
-
-eyespots_location2$predated <- as.numeric(as.character(eyespots_location2$predated))
 
   
 eyespots_location2 %>% 
@@ -176,6 +193,14 @@ summary(eyespots_model2)
 
 vif(eyespots_model2)
 #test without interaction first
+
+df_location1 <- filter(.data = ef_numcol, location == "1")
+df_location2 <- filter(.data = ef_numcol, location == "2")
+
+
+model_loc1 <- glm(predated~collection+design+location+temperature, data = df_location1,
+                  family = "binomial"(link=logit))
+summary(model_loc1)
 
 eyespots_model3 <- glm(predated~collection*design+design+collection+location+temperature, data = ef_numcol,
                       family = "binomial"(link=logit))
