@@ -188,7 +188,10 @@ vif(eyespots_model2)
 eyespots_model3 <- glm(predated~collection*design+design+collection+location+temperature, data = ef_numcol,
                       family = "binomial"(link=logit))
 summary(eyespots_model3)
+broom::tidy(eyespots_model3, conf.int=T)
 # Does not seem to be an interaction between collection and design
+
+drop1(eyespots_model3, test = "Chisq")
 
 eyespotm3_des <- ggpredict(eyespots_model3, terms = c("collection","design"))
 
@@ -211,7 +214,8 @@ plot(eyespotm4_loc)
 
 vif(eyespots_model4)
 
-drop1(eyespots, test="Chisq")
+drop1(eyespots_model4, test="Chisq")
+broom::tidy(eyespots_model4, conf.int=T)
 
 performance::check_model(eyespots_model4)
 performance::check_model(eyespots_model4, check = "binned_residuals")
@@ -263,6 +267,7 @@ emmeans::emmeans(eyespots_model4, specs=~temperature, type="response")
 emmeans::emmeans(eyespots_model4, specs=~design, type="response")
 
 
+
 augment_glm <- function(mod, predict = NULL){
   fam <- family(mod)
   ilink <- fam$linkinv
@@ -309,7 +314,7 @@ ggplot() +
   geom_ribbon(data = design2_loc1, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "red") +
   geom_line(data = design3_loc1, aes(x = collection, y = .fitted), color = "green") +
   geom_ribbon(data = design3_loc1, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "green") +
-  labs(x = "Time", y = "Probability of Predation", color = "Design Type") +
+  labs(x = "Time (collection event)", y = "Probability of Predation", color = "Design Type") +
   scale_color_manual(values = c("blue", "red", "green")) +
   theme_minimal()
 
@@ -329,6 +334,46 @@ ggplot() +
   geom_ribbon(data = design2_loc2, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "red") +
   geom_line(data = design3_loc2, aes(x = collection, y = .fitted), color = "green") +
   geom_ribbon(data = design3_loc2, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "green") +
-  labs(x = "Time", y = "Probability of Predation", color = "Design Type") +
+  labs(x = "Time (collection event)", y = "Probability of Predation", color = "Design Type") +
+  scale_color_manual(values = c("blue", "red", "green")) +
+  theme_minimal()
+
+
+# same plots but using eyespot_model 4 (with interaction) instead
+
+# Filter data by location
+augdata_loc1 <- filter(augmented_data, location == 1)
+augdata_loc2 <- filter(augmented_data, location == 2)
+
+design1_loc1a <- filter(augdata_loc1, design == 1)
+design2_loc1a <- filter(augdata_loc1, design == 2)
+design3_loc1a <- filter(augdata_loc1, design == 3)
+
+# Plot predicted probabilities for each design type
+ggplot() +
+  geom_line(data = design1_loc1a, aes(x = collection, y = .fitted), color = "blue") +
+  geom_ribbon(data = design1_loc1a, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "blue") +
+  geom_line(data = design2_loc1a, aes(x = collection, y = .fitted), color = "red") +
+  geom_ribbon(data = design2_loc1a, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "red") +
+  geom_line(data = design3_loc1a, aes(x = collection, y = .fitted), color = "green") +
+  geom_ribbon(data = design3_loc1a, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "green") +
+  labs(x = "Time (collection event)", y = "Probability of Predation", color = "Design Type") +
+  scale_color_manual(values = c("blue", "red", "green")) +
+  theme_minimal()
+
+# Filter data by design type
+design1_loc2a <- filter(augdata_loc2, design == 1)
+design2_loc2a <- filter(augdata_loc2, design == 2)
+design3_loc2a <- filter(augdata_loc2, design == 3)
+
+# Plot predicted probabilities for each design type
+ggplot() +
+  geom_line(data = design1_loc2a, aes(x = collection, y = .fitted), color = "blue") +
+  geom_ribbon(data = design1_loc2a, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "blue") +
+  geom_line(data = design2_loc2a, aes(x = collection, y = .fitted), color = "red") +
+  geom_ribbon(data = design2_loc2a, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "red") +
+  geom_line(data = design3_loc2a, aes(x = collection, y = .fitted), color = "green") +
+  geom_ribbon(data = design3_loc2a, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "green") +
+  labs(x = "Time (collection event)", y = "Probability of Predation", color = "Design Type") +
   scale_color_manual(values = c("blue", "red", "green")) +
   theme_minimal()
