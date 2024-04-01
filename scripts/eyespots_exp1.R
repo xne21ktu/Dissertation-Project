@@ -10,7 +10,7 @@ library(patchwork) # combining plots
 # HYPOTHESES ----
 # Design 1 (blank), 2(1 eyespot), 3(2 eyespots - control)
 
-# The level of predation between the two locations will be significantly different
+# The level of predation between the two locations will be the same
 # The level of predation will increase with time
 # Design 1 will be predated the most and design 3 will be predated the least
 
@@ -133,7 +133,7 @@ eyespots_location1p <- filter(.data = eyespots_predated, location == "1")
 eyespots_location2p <- filter(.data = eyespots_predated, location == "2")
 
 eyespots_location1 %>% 
-  ggplot(aes(x=collection,y=predated))+
+  ggplot(aes(x=collection,y=predation))+
   geom_bar(stat = "identity")
 
 # not a clear pattern of change in predation levels at location 1,
@@ -141,14 +141,14 @@ eyespots_location1 %>%
 
   
 eyespots_location2 %>% 
-  ggplot(aes(x=collection,y=predated))+
+  ggplot(aes(x=collection,y=predation))+
   geom_bar(stat = "identity")
 # maybe use point with se
 # clear increase in predation levels over the experiment at location 2 - indicating
 # a stronger effect of learning
 
 eyespots_filtered %>% 
-  ggplot(aes(x=weather,y=predated, fill=predated))+
+  ggplot(aes(x=weather,y=predated, fill=predation))+
   geom_bar(position="stack", stat="identity")+
   coord_flip()
 # shows predation/survival rate during each type of weather - due to the small sample size,
@@ -206,7 +206,7 @@ vif(eyespots_model3)
 
 eyespots_model4 <- glm(predation~collection*location+design+collection+location+temperature, data = ef_numcol,
                        family = "binomial"(link=logit))
-
+#1191/1044 = 1.14 which suggests overdispersion
 summary(eyespots_model4)
 # collection loses its power
 
@@ -222,6 +222,11 @@ broom::tidy(eyespots_model4, conf.int=T)
 
 performance::check_model(eyespots_model4)
 performance::check_model(eyespots_model4, check = "binned_residuals")
+# some overdispersion
+
+eyespots_model4ql <- glm(predation~collection*location+design+collection+location+temperature, data = ef_numcol,
+                       family = "quasibinomial"(link=logit))
+summary(eyespots_model4ql)
 
 locdes_data <- ggpredict(eyespots_model4, terms = c("location", "design"))
 locdes_plot <- plot(locdes_data)
