@@ -138,7 +138,7 @@ eyespots2_model1 <- glm(predation~design, data = eyespots2,
                        family = "binomial"(link=logit))
 
 summary(eyespots2_model1)
-# AIC decreases to 1401.1 - increases, suggesting design is not better explaining predation likelihood
+# AIC= 1401.1 - increases, suggesting design is not better explaining predation likelihood
 
 eyespots2_model2 <- glm(predation~design+collection+location+temperature+weather, data = eyespots2,
                        family = "binomial"(link=logit))
