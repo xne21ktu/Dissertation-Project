@@ -2,13 +2,12 @@
 # PACKAGES ----
 library(tidyverse) # tidy data packages.
 library(kableExtra) # add ons for summary tables.
-library(janitor)# clean variable names
 library(car) # for vif function - looks at correlations
 library(ggeffects) # for ggpredict function to plot model
 library(performance) # model assumption checking
+library(patchwork) # combining plots
 #_________________________----
 # HYPOTHESES ----
-
 # Design 1 (blank), 2(1 eyespot), 3(2 eyespots - control)
 
 # The level of predation between the two locations will be significantly different
@@ -44,6 +43,10 @@ head(eyespots_filtered)
 # check variable names
 colnames(eyespots_filtered)
 
+eyespots_filtered <- rename(eyespots_filtered,
+                   "predation"="predated",  
+                   )
+
 # check for duplication
 eyespots_filtered %>% 
   duplicated() %>% 
@@ -52,7 +55,7 @@ eyespots_filtered %>%
 
 eyespots_filtered$collection <- as_factor(eyespots_filtered$collection)
 eyespots_filtered$design <- as_factor(eyespots_filtered$design)
-eyespots_filtered$predated <- as_factor(eyespots_filtered$predated)
+eyespots_filtered$predation <- as_factor(eyespots_filtered$predation)
 eyespots_filtered$location <- as_factor(eyespots_filtered$location)
 eyespots_filtered$weather <- as_factor(eyespots_filtered$weather)
 eyespots_filtered$slug <- as_factor(eyespots_filtered$slug)
@@ -70,7 +73,7 @@ eyespots_filtered %>%
 # so now NA numbers = 0
 
 eyespots_filtered %>% 
-  group_by(design, predated) %>% 
+  group_by(design, predation) %>% 
   summarise(n = n()) %>%
   mutate(prob_obs = n/sum(n))
 
@@ -80,30 +83,30 @@ eyespots_filtered %>%
 # Can see number of missing dummies for each design
 
 eyespots_filtered %>% 
-  group_by(location, predated) %>% 
+  group_by(location, predation) %>% 
   summarise(n = n()) %>%
   mutate(prob_obs = n/sum(n))
 
 #Can see that location 2 had a higher level of predation (72%) than location 1 (60%)
 
-eyespots_predated <- filter(.data = eyespots_filtered, predated == "1")
+eyespots_predated <- filter(.data = eyespots_filtered, predation == "1")
 eyespots_location1 <- filter(.data = eyespots_filtered, location == "1")
 eyespots_location2 <- filter(.data = eyespots_filtered, location == "2")
 
 head(eyespots_location1)
 head(eyespots_location2)
 
-eyespots_location1$predated <- as.numeric(as.character(eyespots_location1$predated))
-eyespots_location2$predated <- as.numeric(as.character(eyespots_location2$predated))
+eyespots_location1$predation <- as.numeric(as.character(eyespots_location1$predation))
+eyespots_location2$predation <- as.numeric(as.character(eyespots_location2$predation))
 
 eyespots_location1 %>% 
-  group_by(design, predated) %>% 
+  group_by(design, predation) %>% 
   summarise(n = n()) %>%
   mutate(prob_obs = n/sum(n))
 #predation rates: 1 = 80%, 2 = 53%, 3 = 48%
 
 eyespots_location2 %>% 
-  group_by(design, predated) %>% 
+  group_by(design, predation) %>% 
   summarise(n = n()) %>%
   mutate(prob_obs = n/sum(n))
 # 1 = 83%, 2 = 68%, 3 = 65%
@@ -112,14 +115,14 @@ eyespots_location2 %>%
 # PLOTS ----
 
 eyespots_filtered %>% 
-  ggplot(aes(x=design,y=predated, fill=predated))+
+  ggplot(aes(x=design,y=predation, fill=predation))+
   geom_bar(position="stack", stat="identity")+
   coord_flip()
 # Can see a larger predation rate and sample size for design 1, not much difference
 # between design 2 and 3
 
 eyespots_filtered %>% 
-  ggplot(aes(x=location,y=predated, fill=predated))+
+  ggplot(aes(x=location,y=predation, fill=predation))+
   geom_bar(position="stack", stat="identity")+
   coord_flip()
 
@@ -159,7 +162,7 @@ ef_numcol <- eyespots_filtered %>% mutate(collection = as.numeric(collection))
 # converting collection column into numeric data type as its more suitable for model
 
 
-eyespots_model0 <- glm(predated~1, data = eyespots_filtered,
+eyespots_model0 <- glm(predation~1, data = eyespots_filtered,
                       family = "binomial"(link=logit))
 
 summary(eyespots_model0)
@@ -167,13 +170,13 @@ summary(eyespots_model0)
 # null model which will be used to compare AIC scores with more complex models
 # AIC = 1359.4, df = 1050 (remember AIC will decrease with increase in df)
 
-eyespots_model1 <- glm(predated~design, data = eyespots_filtered,
+eyespots_model1 <- glm(predation~design, data = eyespots_filtered,
                       family = "binomial"(link=logit))
 
 summary(eyespots_model1)
 # AIC decreases to 1300.7
 
-eyespots_model2 <- glm(predated~design+collection+location+temperature, data = ef_numcol,
+eyespots_model2 <- glm(predation~design+collection+location+temperature, data = ef_numcol,
                        family = "binomial"(link=logit))
 # date is not used because it correlates with collection which is included instead
 # removed weather from model because of its vif of 25 and beacause in this data it does not,
@@ -185,7 +188,7 @@ summary(eyespots_model2)
 vif(eyespots_model2)
 #test without interaction first
 
-eyespots_model3 <- glm(predated~collection*design+design+collection+location+temperature, data = ef_numcol,
+eyespots_model3 <- glm(predation~collection*design+design+collection+location+temperature, data = ef_numcol,
                       family = "binomial"(link=logit))
 summary(eyespots_model3)
 broom::tidy(eyespots_model3, conf.int=T)
@@ -201,7 +204,7 @@ plot(eyespotm3_des)
 vif(eyespots_model3)
 # should get rid of interaction term between collection and design
 
-eyespots_model4 <- glm(predated~collection*location+design+collection+location+temperature, data = ef_numcol,
+eyespots_model4 <- glm(predation~collection*location+design+collection+location+temperature, data = ef_numcol,
                        family = "binomial"(link=logit))
 
 summary(eyespots_model4)
@@ -220,13 +223,20 @@ broom::tidy(eyespots_model4, conf.int=T)
 performance::check_model(eyespots_model4)
 performance::check_model(eyespots_model4, check = "binned_residuals")
 
+locdes_data <- ggpredict(eyespots_model4, terms = c("location", "design"))
+locdes_plot <- plot(locdes_data)
+
+temp_data <- ggpredict(eyespots_model4, terms = c("temperature"))
+
+temp_plot<- plot(temp_data)
+
 # creating a model for each location
 
 df_location1 <- filter(.data = ef_numcol, location == "1")
 df_location2 <- filter(.data = ef_numcol, location == "2")
 
 
-model_loc1 <- glm(predated~collection+design+temperature, data = df_location1,
+model_loc1 <- glm(predation~collection+design+temperature, data = df_location1,
                   family = "binomial"(link=logit))
 summary(model_loc1)
 
@@ -244,7 +254,7 @@ ml1_coldes <- ggpredict(model_loc1, terms = c("collection","design"))
 
 plot(ml1_coldes)
 
-model_loc2 <- glm(predated~collection+design+temperature, data = df_location2,
+model_loc2 <- glm(predation~collection+design+temperature, data = df_location2,
                   family = "binomial"(link=logit))
 summary(model_loc2)
 
@@ -264,8 +274,19 @@ plot(ml2_coldes)
 # PREDICTIONS ----
 
 emmeans::emmeans(eyespots_model4, specs=~temperature, type="response")
-emmeans::emmeans(eyespots_model4, specs=~design, type="response")
 
+
+design_tibble <- emmeans::emmeans(eyespots_model4, specs=~design, type="response") %>% as_tibble()
+design_table <- design_tibble %>% select(- `df`) %>% 
+  mutate_if(is.numeric, round, 4) %>% 
+  kbl(col.names = c("Design",
+                    "Probability",
+                    "SE",
+                    "Lower 95% CI",
+                    "Upper 95% CI"),
+      caption = "Mean Probability of Predation For Each Design", 
+      booktabs = T) %>% 
+  kable_styling(full_width = FALSE, font_size=12, position = "left")
 
 
 augment_glm <- function(mod, predict = NULL){
@@ -288,16 +309,17 @@ design2_data <- filter(augmented_data, design == 2)
 design3_data <- filter(augmented_data, design == 3)
 
 # Plot predicted probabilities for each design type
-ggplot() +
+combined_design_plot <- ggplot() +
   geom_line(data = design1_data, aes(x = collection, y = .fitted), color = "blue") +
   geom_ribbon(data = design1_data, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "blue") +
   geom_line(data = design2_data, aes(x = collection, y = .fitted), color = "red") +
   geom_ribbon(data = design2_data, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "red") +
   geom_line(data = design3_data, aes(x = collection, y = .fitted), color = "green") +
   geom_ribbon(data = design3_data, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "green") +
-  labs(x = "Time", y = "Probability of Predation", color = "Design Type") +
-  scale_color_manual(values = c("blue", "red", "green")) +
+  labs(x = "Time(collection event)", y = "Probability of Predation", color = "Design Type") +
+  scale_color_manual(values = c("blue", "red", "green"))+
   theme_minimal()
+  
 
 augmented_loc1 <- augment_glm(model_loc1)
 
@@ -350,7 +372,7 @@ design2_loc1a <- filter(augdata_loc1, design == 2)
 design3_loc1a <- filter(augdata_loc1, design == 3)
 
 # Plot predicted probabilities for each design type
-ggplot() +
+loc1_learning_plot <- ggplot() +
   geom_line(data = design1_loc1a, aes(x = collection, y = .fitted), color = "blue") +
   geom_ribbon(data = design1_loc1a, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "blue") +
   geom_line(data = design2_loc1a, aes(x = collection, y = .fitted), color = "red") +
@@ -367,7 +389,7 @@ design2_loc2a <- filter(augdata_loc2, design == 2)
 design3_loc2a <- filter(augdata_loc2, design == 3)
 
 # Plot predicted probabilities for each design type
-ggplot() +
+loc2_learning_plot <- ggplot() +
   geom_line(data = design1_loc2a, aes(x = collection, y = .fitted), color = "blue") +
   geom_ribbon(data = design1_loc2a, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "blue") +
   geom_line(data = design2_loc2a, aes(x = collection, y = .fitted), color = "red") +
@@ -377,3 +399,6 @@ ggplot() +
   labs(x = "Time (collection event)", y = "Probability of Predation", color = "Design Type") +
   scale_color_manual(values = c("blue", "red", "green")) +
   theme_minimal()
+
+learning_plot <- (loc1_learning_plot+loc2_learning_plot)
+  plot_layout(guides = "collect") 
