@@ -1,8 +1,7 @@
 ---
 title: "Report"
-output:
-  pdf_document: default
-  html_document: default
+output: html_document
+
 ---
 
 
@@ -21,13 +20,13 @@ library(janitor)
 
 ```{r include=FALSE}
 
-source("scripts/eyespots.R")
+source("scripts/eyespots_exp1.R")
 
 ```
 
 ## Results:
 
-The ultimate question addressed in this experiment is does the eyespot ‘sparkle’ decrease the predation rate of lepidoptera. For each experiment, I used a binomial logit-link generalized linear model to analyse the effect of design, location, time (collection) and temperature on the likelihood of predation. All analyses and data cleaning were carried out in R (ver 4.3.3) with the tidyverse range of packages (Wickham et al, 2019), car (Fox et al, 2023), patchwork (Lin et al, 2024) and ggeffects (Lüdecke et al, 2024) packages. Model residuals were checked with the performance package (Lüdecke et al, 2021). Summary tables were produced with broom (Robinson et al 2022) and KableExtra (Zhu, 2020) packages. In the analysis, the term collection refers to the event of collecting in the models to count predation levels. This happened 9 times throughout each experiment. Collection is used as a reference for time into the experiment in analyses and is used as a numerical variable, so that any potential effects of learning can be investigated. 
+The ultimate question addressed in this experiment is does the eyespot ‘sparkle’ decrease the predation rate of lepidoptera. For each experiment, I used a binomial logit-link generalized linear model, with quasi-likelihoods to account for overdispersion, to analyse the effect of design, location, time (collection) and temperature on the likelihood of predation. All analyses and data cleaning were carried out in R (ver 4.3.3) with the tidyverse range of packages (Wickham et al, 2019), car (Fox et al, 2023), patchwork (Lin et al, 2024) and ggeffects (Lüdecke et al, 2024) packages. Model residuals were checked with the performance package (Lüdecke et al, 2021). Summary tables were produced with broom (Robinson et al 2022) and KableExtra (Zhu, 2020) packages. In the analysis, the term collection refers to the event of collecting in the models to count predation levels. This happened 9 times throughout each experiment. Collection is used as a reference for time into the experiment in analyses and is used as a numerical variable, so that any potential effects of learning can be investigated. 
 
 # Experiment 1:
 

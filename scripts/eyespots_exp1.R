@@ -227,11 +227,12 @@ performance::check_model(eyespots_model4, check = "binned_residuals")
 eyespots_model4ql <- glm(predation~collection*location+design+collection+location+temperature, data = ef_numcol,
                        family = "quasibinomial"(link=logit))
 summary(eyespots_model4ql)
-
-locdes_data <- ggpredict(eyespots_model4, terms = c("location", "design"))
+# adjusts for overdispersion and significance levels remain the same
+# 
+locdes_data <- ggpredict(eyespots_model4ql, terms = c("location", "design"))
 locdes_plot <- plot(locdes_data)
 
-temp_data <- ggpredict(eyespots_model4, terms = c("temperature"))
+temp_data <- ggpredict(eyespots_model4ql, terms = c("temperature"))
 
 temp_plot<- plot(temp_data)
 
@@ -278,10 +279,10 @@ plot(ml2_coldes)
 #________________________----
 # PREDICTIONS ----
 
-emmeans::emmeans(eyespots_model4, specs=~temperature, type="response")
+emmeans::emmeans(eyespots_model4ql, specs=~temperature, type="response")
 
 
-design_tibble <- emmeans::emmeans(eyespots_model4, specs=~design, type="response") %>% as_tibble()
+design_tibble <- emmeans::emmeans(eyespots_model4ql, specs=~design, type="response") %>% as_tibble()
 design_table <- design_tibble %>% select(- `df`) %>% 
   mutate_if(is.numeric, round, 4) %>% 
   kbl(col.names = c("Design",
@@ -304,9 +305,9 @@ augment_glm <- function(mod, predict = NULL){
            .fitted=ilink(.fitted))
 }
 
-augment_glm(eyespots_model4)
+augment_glm(eyespots_model4ql)
 
-augmented_data <- augment_glm(eyespots_model4)
+augmented_data <- augment_glm(eyespots_model4ql)
 
 # Filter data by design type
 design1_data <- filter(augmented_data, design == 1)
@@ -405,5 +406,5 @@ loc2_learning_plot <- ggplot() +
   scale_color_manual(values = c("blue", "red", "green")) +
   theme_minimal()
 
-learning_plot <- (loc1_learning_plot+loc2_learning_plot)
+learning_plot <- (loc1_learning_plot+loc2_learning_plot)+
   plot_layout(guides = "collect") 
