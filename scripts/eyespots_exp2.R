@@ -10,9 +10,9 @@ library(patchwork) # combining plots
 # HYPOTHESES ----
 # Design 1 (sparkle within eyespots), 2(sparkle outside of eyespots), 3(2 eyespots - control)
 # Exposure time changed to 24 hours due to predation % increasing too much
-# The level of predation between the two locations will be the same
+# Location 2 will have a higher level of predation than location 1
 # The level of predation will increase with time
-# Design 1 will be predated the least
+# Design 1 will be predated the least and design 3 will be predated the most
 
 
 #_________________________----
@@ -150,12 +150,29 @@ drop1(eyespots2_model2, test="Chisq")
 
 #remove temperature and weather from model
 
-eyespots2_model3 <- glm(predation~design+collection+location, data = eyespots2,
-                        family = "binomial"(link=logit))
-summary(eyespots2_model3)
+eyespots2_model3ql <- glm(predation~design+collection+location, data = eyespots2,
+                        family = "quasibinomial"(link=logit))
+summary(eyespots2_model3ql)
 # residual deviance/residual df = 1.2 which indicates overdispersion
-performance::check_model(eyespots2_model3, check = "binned_residuals")
+performance::check_model(eyespots2_model3ql, check = "binned_residuals")
 # does show some overdispersion = more variance than we expect from the prediction of the mean by our model.
+
+drop1(eyespots2_model3ql, test="Chisq")
+emmeans::emmeans(eyespots2_model3ql, specs= pairwise~design)
+
+
+
+design_tibble <- emmeans::emmeans(eyespots2_model3ql, specs=~design, type="response") %>% as_tibble()
+design_table <- design_tibble %>% select(- `df`) %>% 
+  mutate_if(is.numeric, round, 4) %>% 
+  kbl(col.names = c("Design",
+                    "Probability",
+                    "SE",
+                    "Lower 95% CI",
+                    "Upper 95% CI"),
+      caption = "Mean Probability of Predation For Each Design", 
+      booktabs = T) %>% 
+  kable_styling(full_width = FALSE, font_size=12, position = "left")
 
 eyespots2_model4 <- glm(predation~design+collection+location+collection*location, data = eyespots2,
                         family = "binomial"(link=logit))
@@ -192,12 +209,18 @@ plot(coldesl2_data)
 
 # these differences suggest that the effect of design on predation may vary across different locations.
 
-eyespots2_model5 <- glm(predation~design+collection+location+design*location, data = eyespots2,
-                        family = "binomial"(link=logit))
-summary(eyespots2_model5)
-drop1(eyespots2_model5, test="Chisq")
+eyespots2_model5ql <- glm(predation~design+collection+location+design*location, data = eyespots2,
+                        family = "quasibinomial"(link=logit))
+summary(eyespots2_model5ql)
+drop1(eyespots2_model5ql, test="Chisq")
 
 #it appears that the effect of design on predation rates does not vary significantly between the two locations,
 #despite differences in the significance of design in the individual models for each location. 
-#drop1 also suggests removal of interaction term.
+#drop1 also suggests removal of interaction term. Which is suprising,
+# I assume that although there is a difference between design 1 and designs 2/3 at location 1,
+# it is not big enough for there to be an interaction between location and design
+
+emmeans::emmeans(eyespots2_model5ql, specs= pairwise~design|location)
+# p value around 0.1 suggesting there may be something going on between design 1 and 2/3 and
+# probabilities support this. No statistically significant evidence but suggest future work
 

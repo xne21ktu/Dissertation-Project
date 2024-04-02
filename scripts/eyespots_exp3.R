@@ -113,7 +113,13 @@ drop1(eyespots3_model2, test="Chisq")
 #remove temperature and weather from model
 
 eyespots3_model3 <- glm(predation~design+collection, data = eyespots3,
-                        family = "binomial"(link=logit))
+                        family = "quasibinomial"(link=logit))
 summary(eyespots3_model3)   
 performance::check_model(eyespots3_model3, check = "binned_residuals")
 # suggests overdispersion, and residual deviance/residual df = 1.3
+
+drop1(eyespots3_model3, test="Chisq") 
+emmeans::emmeans(eyespots3_model3, specs = pairwise ~ design)
+# overall effect of design on predation is significant
+# pairwise comparisons between each design
+

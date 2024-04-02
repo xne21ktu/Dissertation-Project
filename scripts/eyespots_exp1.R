@@ -228,7 +228,11 @@ eyespots_model4ql <- glm(predation~collection*location+design+collection+locatio
                        family = "quasibinomial"(link=logit))
 summary(eyespots_model4ql)
 # adjusts for overdispersion and significance levels remain the same
-# 
+drop1(eyespots_model4ql, test="Chisq")
+# overall effect of design on predation is significant 
+emmeans::emmeans(eyespots_model4ql, specs = pairwise ~ design)
+# no significant difference between designs 2 and 3 
+
 locdes_data <- ggpredict(eyespots_model4ql, terms = c("location", "design"))
 locdes_plot <- plot(locdes_data)
 
