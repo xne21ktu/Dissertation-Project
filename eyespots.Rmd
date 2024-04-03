@@ -33,7 +33,7 @@ The ultimate question addressed in this report is does the eyespot ‘sparkle’
 
 ## Experiment 1:
 
-The main hypothesis of this experiment was that design 3 (2 eyespots) would show the least amount of predation and design 1 (blank) would show the greatest likelihood of predation. Previous research has shown that blank models show a significantly greater probability of predation compared to spotted models (Stevens et al, 2007) . 
+The main hypothesis of this experiment was that design 3 (2 eyespots) would show the least amount of predation compared to designs 1 (blank) and 2 (1 eyespot), with blank models showing the greatest likelihood of predation. Previous research has shown that blank models show a significantly greater probability of predation compared to spotted models (Stevens et al, 2007) . 
 
 ```{r echo=FALSE, fig.asp=0.8, fig.pos="H", fig.width=7, warning=FALSE, message=FALSE}
 
@@ -44,29 +44,62 @@ exp1_model %>% kable_styling(latex_options = "HOLD_position")
 
 There was a significant overall effect of design on likelihood of predation (χ² 2,1050 = 67.96, P = <0.0001), with blank models showing a mean predation probability of 84.23% [95% CI: 80.04 - 87.68%]. Mean probability of predation for models with 1 eyespot was 62.57% [95% CI: 56.95-67.87%], and the lowest mean probability of predation was 58.43% for models with 2 eyespots [95% CI: 52.75-63.89%].
 
-Post hoc analysis showed that these differences were statistically significant for blank models compared to 1 eyespot models (Tukey test:zInf = 6.43, P = <0.0001) and 2 eyespot models (zInf = 7.41, P = <0.0001). The analysis showed that the odds of predation for blank models was 3.2 times higher than design 2 (SE = 0.58, z = 6.43, p <0.0001) and 3.8 times higher than design 3 (SE = 0.69, z = 7.41, p <0.0001). There was no overall evidence of a difference between 1 eyespot models and 2 eyespot models, with an odds ratio of 1.19 (SE = 0.19, z = 1.08, p = 0.529). 
-
-```{r fig.asp = 0.8, fig.width = 10, echo=FALSE, warning=FALSE, message = FALSE}
-
-combined_design_plot
-
-```
-**Figure 1:** Blank models show greater probability of predation throughout experiment. Plot shows the probability of predation for three designs of artificial lepidoptera (blank = blue, 1 eyespot = red, 2 eyespots = green) throughout the experiment. Models were left exposed to predators in 48 hour periods. Y axis represents the probability of predation and x axis represents collection (or time into experiment). Shaded areas reprsent the 95% confidence intervals for probability predictions of predation for each design. Probability predictions made using the augment_glm function which analysed a binomial logit-link generalized linear model.
-
-## Experiment 2:
-
-
-
-## Influence of location on Predation
-
-Prior to experiment 1, it was hypothesised that the level of predation between the two locations would follow the same pattern because predation levels were similar during the preliminary experiment. Analysis of the model for experiment 1 showed that likelihood of predation was significantly lower in location 2 compared to location 1 (logit-odds: -1.76 [95% CI: -2.44 - -1.09], z = -5.12, df = 1050, P = <0.0001). Predicted probabilities of predation for blank models were 80% (95% CI: 74% - 84%) at location 1 and 88% (95% CI: 84 - 91%) at location 2. Predicted probabilities of predation for 1 eyespot models were 55% (95% CI: 49% - 61%) at location 1 and 70% (95% CI: 63 - 76%) at location 2. Predicted probabilities of predation for 2 eyespot models were 51% (95% CI: 44% - 57%) at location 1 and 66% (95% CI: 59 - 72%) at location 2.
+Post hoc analysis showed that these differences were statistically significant for blank models compared to 1 eyespot models (Tukey test:zInf = 6.43, P = <0.0001) and 2 eyespot models (zInf = 7.41, P = <0.0001). The analysis showed that the odds of predation for blank models was 3.2 times higher than design 2 (SE = 0.58, z = 6.43, p <0.0001) and 3.8 times higher than design 3 (SE = 0.69, z = 7.41, p <0.0001). There was no overall evidence of a difference between 1 eyespot models and 2 eyespot models (SE = 0.19, z = 1.08, p = 0.529). 
 
 ```{r fig.asp = 0.8, fig.width = 10, echo=FALSE, warning=FALSE, message = FALSE}
 
 locdes_plot
 
 ```
-**Figure 3:** Probability of predation higher for all designs at location 2. Plot shows probabilities of predation across three designs of artificial Lepidoptera. Pattern of predation across all three designs remain similar across both locations but a greater probability of predation seen at location 2. Upper and lower boundaries for each data point represent 95% confidence intervals. Key describes which colours represent each design. Y axis represents probability of predation and x axis represents location. Predictions made using the ggpredict function which analysed a binomial logit-link generalized linear model.
+**Figure 1:** Probability of predation higher for all designs at location 2. Plot shows probabilities of predation across three designs of artificial Lepidoptera. Pattern of predation across all three designs remain similar across both locations but a greater probability of predation seen at location 2. Upper and lower boundaries for each data point represent 95% confidence intervals. Key describes which colours represent each design. Y axis represents probability of predation and x axis represents location. Predictions made using the ggpredict function which analysed a binomial logit-link generalized linear model.
+
+## Experiment 2:
+
+The main hypothesis for this experiment was that design 1 ('sparkle' within eyespots) would show the lowest likelihood of predation, and that design 3 (control - 2 eyespots, no 'sparkle') would show the highest likelihood of predation compared to design 1 and design 2 ('sparkle' outside of eyespots). Previous research concluded that models with eyespots containing a 'sparkle' have a lower predation rate compared to eyespots without (Blut et al, 2012). It was thought that models with 'sparkles' outside of the eyespots would show lower predation rate compared to the control because of an extra level of conspicuousness. 
+
+```{r echo=FALSE, fig.asp=0.8, fig.pos="H", fig.width=7, warning=FALSE, message=FALSE}
+
+exp2_model %>% kable_styling(latex_options = "HOLD_position")
+
+```
+**Table 2** No statistically significant evidence of a difference in effect of model designs on predation. Output displaying estimated coefficients with 95% confidence intervals, z-values, and associated p-values from a binomial logit-link generalized linear model assessing the predictors of predation. The predictors include collection, location (2 levels), design (3 levels) and temperature.
+
+Design did not have a significant effect on the likelihood of predation (χ² 2,1033 = 3.1, P = 0.2). A descriptive summary of the raw data indicated there may be a difference in predation levels of models containing a 'sparkle' compared to other designs at location 1, but in location 2, predation levels were almost equal for all designs. Due to this observation, an interaction term between location and design was added to the model. The indication of a potential interaction was supported by the predicted probabilities of predation in each location (figure 2).
+
+```{r fig.asp = 0.8, fig.width = 10, echo=FALSE, warning=FALSE, message = FALSE}
+
+locdes3_plot
+
+```
+**Figure 2** Models with eyespots containing 'sparkle' predicted less likely to be predated, but only in location 1. Despite the visual difference, it is not statistically significant. Plot shows the probability of predation for three designs of artificial lepidoptera at two locations. Models were left exposed for 24 hours. Y axis represents predation probability and x axis represents design type. Probability predictions made using the gg_predict function which analysed a binomial logit-link generalized linear model. Analysis of the model did not show a significant effect of design on probability of predation. 
+
+Adding the interaction term enabled pairwise comparisons between design to be made within each location. As expected, post hoc analysis did not show a significant difference in the odds of predation between designs at location 2. In location 1, comparisons between designs did indicate that predation was approximately 0.65 times less likely to occur in models with eyespots containing 'sparkles'. However, these differences were not large enough to be significant (design 1 - design 2: SE = 0.15, z = -1.87, P = 0.15)(design 1 - design 3: SE = 0.14, z = -1.99, P = 0.11). This is supported by the interaction between location and design not having a significant effect on predation (χ² 2,1033 = 2.01, P = 0.37). 
+ 
+# Experiment 3:
+
+The main hypothesis of this experiment was that design 3 (control - 2 eyespots without a 'sparkle') would show the highest likelihood of predation compared to the two 'sparkle' designs. It was hypothesised that design 1 (UV-reflective 'sparkle') would show a lower likelihood of predation compared to design 2 (UV-absorbant 'sparkle') because 'sparkles' in lepidoptera are UV-reflective (Blut et al, 2012). 
+
+```{r echo=FALSE, fig.asp=0.8, fig.pos="H", fig.width=7, warning=FALSE, message=FALSE}
+
+exp3_model %>% kable_styling(latex_options = "HOLD_position")
+
+```
+**Table 2** Control model shows significantly higher likelihood of predation compared to model with UV-reflective 'sparkles' within eyespots. Output displaying estimated coefficients with 95% confidence intervals, z-values, and associated p-values from a binomial logit-link generalized linear model assessing the predictors of predation. The predictors include collection, design (3 levels) and temperature.
+
+There was a significant overall effect of design on likelihood of predation (χ² 2,1051 = 11.40, P = <0.001), with UV-reflective models showing a mean predation probability of 52.7% [95% CI: 47.3 - 58.1%]. Mean probability of predation for UV-absorbant models was 49.2% [95% CI: 43.8-54.6%], and the highest mean probability of predation was 61.8% for control models [95% CI: 56.5-66.9%].
+
+Post hoc analysis showed that these differences were statistically significant for control models compared to UV-reflective models (Tukey test:zInf = -2.36, P = <0.05) and UV-absorbant models (zInf = -3.25, P = <0.01). The analysis showed that the odds of predation for UV-reflective models was 0.69 times lower than control models (SE = 0.11, z = -2.36, p <0.05) and the odds of predation for UV-absorbant models was 0.60 times lower than control models (SE = 0.09 z = -3.25, p <0.01). There was no overall evidence of a difference between both 'sparkle' models (SE = 0.18, z = 0.90, p = 0.64). 
+
+```{r fig.asp = 0.8, fig.width = 10, echo=FALSE, warning=FALSE, message = FALSE}
+
+exp3des_plot
+
+```
+
+
+## Influence of location on Predation
+
+Prior to experiment 1, it was hypothesised that the level of predation between the two locations would follow the same pattern because predation levels were similar during the preliminary experiment. Analysis of the model for experiment 1 showed that likelihood of predation was significantly lower in location 2 compared to location 1 (logit-odds: -1.76 [95% CI: -2.44 - -1.09], z = -5.12, df = 1050, P = <0.0001). Predicted probabilities of predation for models in location 1 was
 
 ## Influence of Learning on Predation: 
 
@@ -88,7 +121,7 @@ The relationship between temperature and predation rates in birds is complex and
 
 ```{r fig.asp = 0.8, fig.width = 10, echo=FALSE, warning=FALSE, message = FALSE}
 
-temp_plot
+temp
 
 ```
 **Figure 2** Probability of predation decreases with increases in temperature for experiment 1. Probability of predation decreases from 84% (95% CI: 78 - 88%) at 9 degrees celsius to 69% (95% CI: 60 - 76%) at 13 degrees celsius. Black line shows this decrease and grey area represents 95% confidence intervals of predictions. Y axis represents the predicted probabilities of predation, obtained using the ggpredict function, which analysed a binomial logit-link generalized linear model.

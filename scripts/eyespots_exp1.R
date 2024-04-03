@@ -148,7 +148,7 @@ eyespots_location2 %>%
 # a stronger effect of learning
 
 eyespots_filtered %>% 
-  ggplot(aes(x=weather,y=predated, fill=predation))+
+  ggplot(aes(x=weather,y=predation, fill=predation))+
   geom_bar(position="stack", stat="identity")+
   coord_flip()
 # shows predation/survival rate during each type of weather - due to the small sample size,

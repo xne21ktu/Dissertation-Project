@@ -158,7 +158,7 @@ performance::check_model(eyespots2_model3ql, check = "binned_residuals")
 # does show some overdispersion = more variance than we expect from the prediction of the mean by our model.
 
 drop1(eyespots2_model3ql, test="Chisq")
-emmeans::emmeans(eyespots2_model3ql, specs= pairwise~design)
+emmeans::emmeans(eyespots2_model3ql, specs= pairwise~design, type = 'response')
 
 
 
@@ -173,6 +173,23 @@ design_table <- design_tibble %>% select(- `df`) %>%
       caption = "Mean Probability of Predation For Each Design", 
       booktabs = T) %>% 
   kable_styling(full_width = FALSE, font_size=12, position = "left")
+
+
+exp2_model <- eyespots2_model3ql %>% broom::tidy(conf.int = T) %>% 
+  select(-`std.error`) %>% 
+  mutate_if(is.numeric, round, 2) %>% 
+  kbl(col.names = c("Predictors",
+                    "Estimates",
+                    "Z-value",
+                    "P",
+                    "Lower 95% CI",
+                    "Upper 95% CI"),
+      caption = "Linear model coefficients", 
+      booktabs = T) %>% 
+  kable_styling(full_width = FALSE, font_size=16)
+
+locdes2_data <- ggpredict(eyespots2_model3ql, terms = c("location", "design"))
+locdes2_plot <- plot(locdes2_data)
 
 eyespots2_model4 <- glm(predation~design+collection+location+collection*location, data = eyespots2,
                         family = "binomial"(link=logit))
@@ -197,7 +214,8 @@ model2_loc1 <- glm(predation~collection+design, data = df2_location1,
 summary(model2_loc1)
 # does show significance for design 3 compared to design 1, and design 2 is not far off (P=0.058)
 coldesl1_data <- ggpredict(model2_loc1, terms = c("collection", "design"))
-plot(coldesl1_data)
+coldes1_plot <- plot(coldesl1_data)
+
 
 model2_loc2 <- glm(predation~collection+design, data = df2_location2,
                    family = "binomial"(link=logit))
@@ -205,8 +223,10 @@ summary(model2_loc2)
 # as expected there is no significant effect of design on predation
 
 coldesl2_data <- ggpredict(model2_loc2, terms = c("collection", "design"))
-plot(coldesl2_data)
+coldes2_plot <- plot(coldesl2_data)
 
+locsep_plot <- (coldes1_plot+coldes2_plot)+
+  plot_layout(guides = "collect") 
 # these differences suggest that the effect of design on predation may vary across different locations.
 
 eyespots2_model5ql <- glm(predation~design+collection+location+design*location, data = eyespots2,
@@ -220,7 +240,9 @@ drop1(eyespots2_model5ql, test="Chisq")
 # I assume that although there is a difference between design 1 and designs 2/3 at location 1,
 # it is not big enough for there to be an interaction between location and design
 
-emmeans::emmeans(eyespots2_model5ql, specs= pairwise~design|location)
+emmeans::emmeans(eyespots2_model5ql, specs= pairwise~design|location, type = 'response')
 # p value around 0.1 suggesting there may be something going on between design 1 and 2/3 and
 # probabilities support this. No statistically significant evidence but suggest future work
 
+locdes3_data <- ggpredict(eyespots2_model5ql, terms = c("design", "location"))
+locdes3_plot <- plot(locdes3_data)

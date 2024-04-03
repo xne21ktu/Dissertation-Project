@@ -116,10 +116,25 @@ eyespots3_model3 <- glm(predation~design+collection, data = eyespots3,
                         family = "quasibinomial"(link=logit))
 summary(eyespots3_model3)   
 performance::check_model(eyespots3_model3, check = "binned_residuals")
-# suggests overdispersion, and residual deviance/residual df = 1.3
+
 
 drop1(eyespots3_model3, test="Chisq") 
-emmeans::emmeans(eyespots3_model3, specs = pairwise ~ design)
+emmeans::emmeans(eyespots3_model3, specs = pairwise ~ design, type = 'response')
 # overall effect of design on predation is significant
 # pairwise comparisons between each design
 
+exp3_model <- eyespots3_model3 %>% broom::tidy(conf.int = T) %>% 
+  select(-`std.error`) %>% 
+  mutate_if(is.numeric, round, 2) %>% 
+  kbl(col.names = c("Predictors",
+                    "Estimates",
+                    "Z-value",
+                    "P",
+                    "Lower 95% CI",
+                    "Upper 95% CI"),
+      caption = "Linear model coefficients", 
+      booktabs = T) %>% 
+  kable_styling(full_width = FALSE, font_size=16)
+
+exp3des_data <- ggpredict(eyespots3_model3, terms = c("design"))
+exp3des_plot <- plot(exp3des_data)
