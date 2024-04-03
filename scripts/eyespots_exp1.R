@@ -248,6 +248,7 @@ exp1_model <- eyespots_model4ql %>% broom::tidy(conf.int = T) %>%
       booktabs = T) %>% 
   kable_styling(full_width = FALSE, font_size=16)
 
+
 locdes_data <- ggpredict(eyespots_model4ql, terms = c("location", "design"))
 locdes_plot <- plot(locdes_data)
 # shows predation levels of each design at each location

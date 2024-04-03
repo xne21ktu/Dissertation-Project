@@ -53,6 +53,12 @@ locdes_plot
 ```
 **Figure 1:** Probability of predation higher for all designs at location 2. Plot shows probabilities of predation across three designs of artificial Lepidoptera. Pattern of predation across all three designs remain similar across both locations but a greater probability of predation seen at location 2. Upper and lower boundaries for each data point represent 95% confidence intervals. Key describes which colours represent each design. Y axis represents probability of predation and x axis represents location. Predictions made using the ggpredict function which analysed a binomial logit-link generalized linear model.
 
+```{r include=FALSE}
+
+source("scripts/eyespots_exp2.R")
+
+```
+
 ## Experiment 2:
 
 The main hypothesis for this experiment was that design 1 ('sparkle' within eyespots) would show the lowest likelihood of predation, and that design 3 (control - 2 eyespots, no 'sparkle') would show the highest likelihood of predation compared to design 1 and design 2 ('sparkle' outside of eyespots). Previous research concluded that models with eyespots containing a 'sparkle' have a lower predation rate compared to eyespots without (Blut et al, 2012). It was thought that models with 'sparkles' outside of the eyespots would show lower predation rate compared to the control because of an extra level of conspicuousness. 
@@ -74,6 +80,12 @@ locdes3_plot
 **Figure 2** Models with eyespots containing 'sparkle' predicted less likely to be predated, but only in location 1. Despite the visual difference, it is not statistically significant. Plot shows the probability of predation for three designs of artificial lepidoptera at two locations. Models were left exposed for 24 hours. Y axis represents predation probability and x axis represents design type. Probability predictions made using the gg_predict function which analysed a binomial logit-link generalized linear model. Analysis of the model did not show a significant effect of design on probability of predation. 
 
 Adding the interaction term enabled pairwise comparisons between design to be made within each location. As expected, post hoc analysis did not show a significant difference in the odds of predation between designs at location 2. In location 1, comparisons between designs did indicate that predation was approximately 0.65 times less likely to occur in models with eyespots containing 'sparkles'. However, these differences were not large enough to be significant (design 1 - design 2: SE = 0.15, z = -1.87, P = 0.15)(design 1 - design 3: SE = 0.14, z = -1.99, P = 0.11). This is supported by the interaction between location and design not having a significant effect on predation (χ² 2,1033 = 2.01, P = 0.37). 
+
+```{r include=FALSE}
+
+source("scripts/eyespots_exp3.R")
+
+```
  
 # Experiment 3:
 
@@ -99,7 +111,13 @@ exp3des_plot
 
 ## Influence of location on Predation
 
-Prior to experiment 1, it was hypothesised that the level of predation between the two locations would follow the same pattern because predation levels were similar during the preliminary experiment. Analysis of the model for experiment 1 showed that likelihood of predation was significantly lower in location 2 compared to location 1 (logit-odds: -1.76 [95% CI: -2.44 - -1.09], z = -5.12, df = 1050, P = <0.0001). Predicted probabilities of predation for models in location 1 was
+# Experiment 1:
+
+Prior to experiment 1, it was hypothesised that the level of predation between the two locations would follow the same pattern because predation levels were similar during the preliminary experiment. There was a significant overall effect of location on likelihood of predation in experiment 1 (). Analysis of the model for experiment 1 showed that likelihood of predation was significantly lower in location 2 compared to location 1 (logit-odds: -1.76 [95% CI: -2.44 - -1.09], z = -5.12, df = 1050, P = <0.0001). Predicted probabilities of predation for models in each location is shown in figure 1.
+
+# Experiment 2:
+
+There was a significant overall effect of location on likelihood of predation in experiment 2 ().  
 
 ## Influence of Learning on Predation: 
 
@@ -121,7 +139,7 @@ The relationship between temperature and predation rates in birds is complex and
 
 ```{r fig.asp = 0.8, fig.width = 10, echo=FALSE, warning=FALSE, message = FALSE}
 
-temp
+temp_plot
 
 ```
 **Figure 2** Probability of predation decreases with increases in temperature for experiment 1. Probability of predation decreases from 84% (95% CI: 78 - 88%) at 9 degrees celsius to 69% (95% CI: 60 - 76%) at 13 degrees celsius. Black line shows this decrease and grey area represents 95% confidence intervals of predictions. Y axis represents the predicted probabilities of predation, obtained using the ggpredict function, which analysed a binomial logit-link generalized linear model.
