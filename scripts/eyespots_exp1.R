@@ -228,17 +228,34 @@ eyespots_model4ql <- glm(predation~collection*location+design+collection+locatio
                        family = "quasibinomial"(link=logit))
 summary(eyespots_model4ql)
 # adjusts for overdispersion and significance levels remain the same
+broom::tidy(eyespots_model4ql, conf.int=T)
+
 drop1(eyespots_model4ql, test="Chisq")
 # overall effect of design on predation is significant 
-emmeans::emmeans(eyespots_model4ql, specs = pairwise ~ design)
-# no significant difference between designs 2 and 3 
+
+performance::check_model(eyespots_model4ql, check = "binned_residuals")
+
+exp1_model <- eyespots_model4ql %>% broom::tidy(conf.int = T) %>% 
+  select(-`std.error`) %>% 
+  mutate_if(is.numeric, round, 2) %>% 
+  kbl(col.names = c("Predictors",
+                    "Estimates",
+                    "Z-value",
+                    "P",
+                    "Lower 95% CI",
+                    "Upper 95% CI"),
+      caption = "Linear model coefficients", 
+      booktabs = T) %>% 
+  kable_styling(full_width = FALSE, font_size=16)
 
 locdes_data <- ggpredict(eyespots_model4ql, terms = c("location", "design"))
 locdes_plot <- plot(locdes_data)
+# shows predation levels of each design at each location
 
 temp_data <- ggpredict(eyespots_model4ql, terms = c("temperature"))
 
 temp_plot<- plot(temp_data)
+# negative relationship
 
 # creating a model for each location
 
@@ -247,12 +264,12 @@ df_location2 <- filter(.data = ef_numcol, location == "2")
 
 
 model_loc1 <- glm(predation~collection+design+temperature, data = df_location1,
-                  family = "binomial"(link=logit))
+                  family = "quasibinomial"(link=logit))
 summary(model_loc1)
 
 vif(model_loc1)
 
-# collection has lost its power
+# collection has lost its power as expected
 
 performance::check_model(model_loc1, check = "binned_residuals")
 
@@ -267,6 +284,7 @@ plot(ml1_coldes)
 model_loc2 <- glm(predation~collection+design+temperature, data = df_location2,
                   family = "binomial"(link=logit))
 summary(model_loc2)
+# collection significant as expected
 
 vif(model_loc2)
 
@@ -283,9 +301,6 @@ plot(ml2_coldes)
 #________________________----
 # PREDICTIONS ----
 
-emmeans::emmeans(eyespots_model4ql, specs=~temperature, type="response")
-
-
 design_tibble <- emmeans::emmeans(eyespots_model4ql, specs=~design, type="response") %>% as_tibble()
 design_table <- design_tibble %>% select(- `df`) %>% 
   mutate_if(is.numeric, round, 4) %>% 
@@ -298,6 +313,9 @@ design_table <- design_tibble %>% select(- `df`) %>%
       booktabs = T) %>% 
   kable_styling(full_width = FALSE, font_size=12, position = "left")
 
+# post-hoc pairwise comparisons between designs
+emmeans::emmeans(eyespots_model4ql, specs = pairwise ~ design, type='response')
+# no significant difference between designs 2 and 3
 
 augment_glm <- function(mod, predict = NULL){
   fam <- family(mod)
@@ -412,3 +430,4 @@ loc2_learning_plot <- ggplot() +
 
 learning_plot <- (loc1_learning_plot+loc2_learning_plot)+
   plot_layout(guides = "collect") 
+
