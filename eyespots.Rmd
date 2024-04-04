@@ -40,15 +40,16 @@ The main hypothesis of this experiment was that design 3 (2 eyespots) would show
 exp1_model %>% kable_styling(latex_options = "HOLD_position")
 
 ```
-**Table 1** Eyespot models show significantly lower log odds likelihood of predation compared to blank models. Output displaying estimated coefficients with 95% confidence intervals, z-values, and associated p-values from a binomial logit-link generalized linear model assessing the predictors of predation. The predictors include collection, location (2 levels), design (3 levels), temperature and an interaction between collection and location.  
+**Table 1** Eyespot models show significantly lower log odds likelihood of predation compared to blank models. Output displaying estimated coefficients with 95% confidence intervals, z-values, and associated p-values from a binomial logit-link generalized linear model assessing the predictors of predation. The predictors include collection, location (2 levels), design (3 levels), temperature and an interaction between collection and location.
 
-There was a significant overall effect of design on likelihood of predation (χ² 2,1050 = 67.96, P = <0.0001), with blank models showing a mean predation probability of 84.23% [95% CI: 80.04 - 87.68%]. Mean probability of predation for models with 1 eyespot was 62.57% [95% CI: 56.95-67.87%], and the lowest mean probability of predation was 58.43% for models with 2 eyespots [95% CI: 52.75-63.89%].
+There was a significant overall effect of design on likelihood of predation (χ² 2,1050 = 67.96, P = <0.0001), with blank models showing a mean predation probability of 84.23% [95% CI: 80.04 - 87.68%]. Mean probability of predation for models with 1 eyespot was 62.57% [56.95-67.87%], and the lowest mean probability of predation was 58.43% [52.75-63.89%] for models with 2 eyespots.
 
 ```{r echo=FALSE, fig.asp=0.8, fig.pos="H", fig.width=7, warning=FALSE, message=FALSE}
 
 design_table %>% kable_styling(latex_options = "HOLD_position")
 
 ```
+**Table 2** Blank models predated significantly more than eyespot models. Design 1 (blank), design 2 (1 eyespot), design 3 (2 eyespots). Table shows mean probabilities of predation across three designs of artificial Lepidoptera left exposed for 48 hours. Values obtained using emmeans function, which analysed a binomial logit-link generalized linear model (Table 1). The SE column represents standard error, and lower and upper 95% confidence intervals are shown.  
 
 Post hoc analysis showed that these differences were statistically significant for blank models compared to 1 eyespot models (Tukey test:zInf = 6.43, P = <0.0001) and 2 eyespot models (zInf = 7.41, P = <0.0001). The analysis showed that the odds of predation for blank models was 3.2 times higher than design 2 (SE = 0.58, z = 6.43, p <0.0001) and 3.8 times higher than design 3 (SE = 0.69, z = 7.41, p <0.0001). There was no overall evidence of a difference between 1 eyespot models and 2 eyespot models (SE = 0.19, z = 1.08, p = 0.529). 
 
@@ -57,7 +58,7 @@ Post hoc analysis showed that these differences were statistically significant f
 des_plot
 
 ```
-**Figure 1:** Probability of predation higher for all designs at location 2. Plot shows probabilities of predation across three designs of artificial Lepidoptera. Pattern of predation across all three designs remain similar across both locations but a greater probability of predation seen at location 2. Upper and lower boundaries for each data point represent 95% confidence intervals. Key describes which colours represent each design. Y axis represents probability of predation and x axis represents location. Predictions made using the ggpredict function which analysed a binomial logit-link generalized linear model.
+**Figure 1:** Probability of predation higher for blank design. Plot shows mean probabilities of predation across three designs of artificial Lepidoptera left exposed for 48 hours. Design 1 (blank), design 2(1 eyespot) and design 3 (2 eyespots). Y axis represents predicted probabilities of predation, calculated using the emmeans function which analysed a binomial logit-link generalized linear model (Table 1). Solid points represent mean probabilities. Horizontal lines and labels represent upper and lower 95% confidence intervals. X axis represent the three designs. 
 
 ```{r include=FALSE}
 
@@ -74,33 +75,34 @@ The main hypothesis for this experiment was that design 1 ('sparkle' within eyes
 exp2_model %>% kable_styling(latex_options = "HOLD_position")
 
 ```
-**Table 2** No statistically significant evidence of a difference in effect of model designs on predation. Output displaying estimated coefficients with 95% confidence intervals, z-values, and associated p-values from a binomial logit-link generalized linear model assessing the predictors of predation. The predictors include collection, location (2 levels), design (3 levels) and temperature.
+**Table 3:** No statistically significant evidence of a difference in effect of model designs on predation. Output displaying estimated coefficients with 95% confidence intervals, z-values, and associated p-values from a binomial logit-link generalized linear model assessing the predictors of predation. The predictors include collection, location (2 levels), design (3 levels) and temperature.
 
-Design did not have a significant effect on the likelihood of predation (χ² 2,1033 = 3.1, P = 0.2). 
+Design did not have a significant effect on the likelihood of predation (χ² 2,1033 = 3.1, P = 0.2). Models with eyespots containing a 'sparkle' showed a predicted mean predation probability of 57.91% [95% CI: 52.11 - 63.50%]. There was a 64.23% [58.55 - 69.53%] probability for models with 'sparkles' outside of eyespots and a 63.87% [58.21 - 69.16%] probability for control models.
 
 ```{r echo=FALSE, fig.asp=0.8, fig.pos="H", fig.width=7, warning=FALSE, message=FALSE}
 
 design_table2 %>% kable_styling(latex_options = "HOLD_position")
 
 ```
+**Table 4:** Models with 'sparkles' within eyespots show slightly lower probability of predation, but this difference is not significant. Design 1 ('sparkle' within eyespots), design 2 ('sparkle' outside of eyespots), design 3 (control). Table shows mean probabilities of predation across three designs of artificial Lepidoptera left exposed for 24 hours. Values obtained using emmeans function, which analysed a binomial logit-link generalized linear model (Table 3). The SE column represents standard error, and lower and upper 95% confidence intervals are shown.
 
-A descriptive summary of the raw data indicated there may be a difference in predation levels of models containing a 'sparkle' compared to other designs at location 1, but in location 2, predation levels were almost equal for all designs. Due to this observation, an interaction term between location and design was added to the model. The indication of a potential interaction was supported by the predicted probabilities of predation in each location (figure 2).
+A descriptive summary of the raw data indicated there may be a difference in predation levels of models with eyespots containing a 'sparkle' compared to other designs at location 1, but in location 2, predation levels were almost equal for all designs. Due to this observation, an interaction term between location and design was added to the model. The indication of a potential interaction was supported by the predicted probabilities of predation in each location (figure 2).
 
 ```{r fig.asp = 0.8, fig.width = 10, echo=FALSE, warning=FALSE, message = FALSE}
 
-locdes3_plot
+locdes_exp2
 
 ```
-**Figure 2** Models with eyespots containing 'sparkle' predicted less likely to be predated, but only in location 1. Despite the visual difference, it is not statistically significant. Plot shows the probability of predation for three designs of artificial lepidoptera at two locations. Models were left exposed for 24 hours. Y axis represents predation probability and x axis represents location. Probability predictions made using the gg_predict function which analysed a binomial logit-link generalized linear model, different to that shown in Table 2 due to the addition of an interaction term between location and design. Analysis of the model did not show a significant effect of the interaction on probability of predation.
+**Figure 2:** Models with eyespots containing 'sparkle' predicted less likely to be predated, but only in location 1. Design 1 ('sparkle' within eyespots), design 2 ('sparkle' outside of eyespots), design 3 (control). Despite the visual difference, it is not statistically significant. Plot shows the mean probability of predation for three designs of artificial lepidoptera at two locations, left exposed for 24 hours. Y axis represents predation probability and x axis represents design. Colours represent location. Probability predictions made using the emmeans function which analysed a binomial logit-link generalized linear model, different to that shown in Table 3 due to the addition of an interaction term between location and design. Analysis of the model did not show a significant effect of the interaction on probability of predation.
 
-Adding the interaction term enabled pairwise comparisons between design to be made within each location. As expected, post hoc analysis did not show a significant difference in the odds of predation between designs at location 2. In location 1, comparisons between designs did indicate that predation was approximately 0.65 times less likely to occur in models with eyespots containing 'sparkles'. However, these differences were not large enough to be significant (design 1 - design 2: SE = 0.15, z = -1.87, P = 0.15)(design 1 - design 3: SE = 0.14, z = -1.99, P = 0.11). This is supported by the interaction between location and design not having a significant effect on predation (χ² 2,1033 = 2.01, P = 0.37). Predicted probabilities calculated from the final model, with the interaction term removed (Table 2), are shown in figure 3.
+Adding the interaction term enabled pairwise comparisons between design to be made within each location. As expected, post hoc analysis did not show a significant difference in the odds of predation between designs at location 2. In location 1, comparisons between designs did indicate that predation was approximately 0.65 times less likely to occur in models with eyespots containing 'sparkles'. However, these differences were not large enough to be significant (design 1 - design 2: SE = 0.15, z = -1.87, P = 0.15)(design 1 - design 3: SE = 0.14, z = -1.99, P = 0.11). This is supported by the interaction between location and design not having a significant effect on predation (χ² 2,1033 = 2.01, P = 0.37). Predicted probabilities calculated from the final model, with the interaction term removed (Table 3), are shown in figure 3.
 
 ```{r fig.asp = 0.8, fig.width = 10, echo=FALSE, warning=FALSE, message = FALSE}
 
 des_plot2
 
 ```
-**Figure 3**
+**Figure 3:** Models with 'sparkles' within eyespots show slightly lower probability of predation, but this difference is not significant. Design 1 ('sparkle' within eyespots), design 2 ('sparkle' outside of eyespots), design 3 (control). Plot shows mean probabilities of predation across three designs of artificial Lepidoptera left exposed for 24 hours. Values obtained using emmeans function, which analysed a binomial logit-link generalized linear model (Table 3). Y axis represents predicted probabilities of predation with solid points representing mean probabilities. Horizontal lines and labels represent upper and lower 95% confidence intervals. X axis represent the three designs. 
 
 
 ```{r include=FALSE}
@@ -118,15 +120,16 @@ The main hypothesis of this experiment was that design 3 (control - 2 eyespots w
 exp3_model %>% kable_styling(latex_options = "HOLD_position")
 
 ```
-**Table 2** Control model shows significantly higher likelihood of predation compared to model with UV-reflective 'sparkles' within eyespots. Output displaying estimated coefficients with 95% confidence intervals, z-values, and associated p-values from a binomial logit-link generalized linear model assessing the predictors of predation. The predictors include collection, design (3 levels) and temperature.
+**Table 5** Control model shows significantly higher likelihood of predation compared to model with UV-reflective 'sparkles' within eyespots. Output displaying estimated coefficients with 95% confidence intervals, z-values, and associated p-values from a binomial logit-link generalized linear model assessing the predictors of predation. The predictors include collection, design (3 levels) and temperature.
 
-There was a significant overall effect of design on likelihood of predation (χ² 2,1051 = 11.40, P = <0.001), with UV-reflective models showing a mean predation probability of 52.7% [95% CI: 47.3 - 58.1%]. Mean probability of predation for UV-absorbant models was 49.2% [95% CI: 43.8-54.6%], and the highest mean probability of predation was 61.8% for control models [95% CI: 56.5-66.9%].
+There was a significant overall effect of design on likelihood of predation (χ² 2,1051 = 11.40, P = <0.001), with UV-reflective models showing a mean predation probability of 52.7% [95% CI: 47.3 - 58.1%]. Mean probability of predation for UV-absorbant models was 49.2% [43.8-54.6%], and the highest mean probability of predation was 61.8% for control models [56.5-66.9%].
 
 ```{r echo=FALSE, fig.asp=0.8, fig.pos="H", fig.width=7, warning=FALSE, message=FALSE}
 
 design_table3 %>% kable_styling(latex_options = "HOLD_position")
 
 ```
+**Table 6** 'Sparkle' models predated significantly less than control models, but no significant difference between UV-reflective and UV-absorbant models. Design 1 (UV-reflective), design 2 (UV-absorbant), design 3 (2 eyespots - control). Table shows probabilities of predation across three designs of artificial Lepidoptera left exposed for 8 hours. Values obtained using emmeans function, which analysed a binomial logit-link generalized linear model (Table 5). The SE column represents standard error, and lower and upper 95% confidence intervals are shown.  
 
 Post hoc analysis showed that these differences were statistically significant for control models compared to UV-reflective models (Tukey test:zInf = -2.36, P = <0.05) and UV-absorbant models (zInf = -3.25, P = <0.01). The analysis showed that the odds of predation for UV-reflective models was 0.69 times lower than control models (SE = 0.11, z = -2.36, p <0.05) and the odds of predation for UV-absorbant models was 0.60 times lower than control models (SE = 0.09 z = -3.25, p <0.01). There was no overall evidence of a difference between both 'sparkle' models (SE = 0.18, z = 0.90, p = 0.64). 
 
@@ -135,7 +138,7 @@ Post hoc analysis showed that these differences were statistically significant f
 des_plot3
 
 ```
-
+**Figure 4** 'Sparkle' models predated significantly less than control models, but no significant difference between UV-reflective and UV-absorbant models. Design 1 (UV-reflective), design 2 (UV-absorbant), design 3 (2 eyespots - control). Plot shows probabilities of predation across three designs of artificial Lepidoptera left exposed for 8 hours. Y axis represents predicted probabilities of predation, calculated using the emmeans function which analysed a binomial logit-link generalized linear model (Table 5). Solid points represent mean probabilities. Horizontal lines and labels represent upper and lower 95% confidence intervals. X axis represent the three designs. 
 
 ## Influence of location on Predation
 
