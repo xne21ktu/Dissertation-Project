@@ -136,5 +136,42 @@ exp3_model <- eyespots3_model3 %>% broom::tidy(conf.int = T) %>%
       booktabs = T) %>% 
   kable_styling(full_width = FALSE, font_size=16)
 
+#________________________----
+# PREDICTIONS ----
+
 exp3des_data <- ggpredict(eyespots3_model3, terms = c("design"))
 exp3des_plot <- plot(exp3des_data)
+
+design_tibble3 <- emmeans::emmeans(eyespots3_model3, specs=~design, type="response") %>% as_tibble()
+design_table3 <- design_tibble3 %>% select(- `df`) %>% 
+  mutate_if(is.numeric, round, 4) %>% 
+  kbl(col.names = c("Design",
+                    "Probability",
+                    "SE",
+                    "Lower 95% CI",
+                    "Upper 95% CI"),
+      caption = "Mean Probability of Predation For Each Design", 
+      booktabs = T) %>% 
+  kable_styling(full_width = FALSE, font_size=12, position = "left")
+
+plot3 <- ggplot(design_tibble3, aes(x = design, y = prob)) +
+  # Add points
+  geom_point() +
+  # Add error bars
+  geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), width = 0.2) +
+  # Add vertical line segments for the error bars
+  geom_segment(aes(xend = design, yend = asymp.LCL), linetype = "dotted") +
+  geom_segment(aes(xend = design, yend = asymp.UCL), linetype = "dotted") +
+  # Add labels for error bars
+  geom_text(aes(label = sprintf("%.3f", asymp.UCL), y = asymp.UCL), vjust = -0.5) +
+  geom_text(aes(label = sprintf("%.3f", asymp.LCL), y = asymp.LCL), vjust = 1.5) +
+  # Customize plot aesthetics
+  labs(x = "Design", y = "Probability") +
+  theme_minimal() 
+
+
+# Print the plot
+des_plot3 <- print(plot3)
+
+
+

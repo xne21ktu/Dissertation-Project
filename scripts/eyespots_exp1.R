@@ -253,6 +253,7 @@ locdes_data <- ggpredict(eyespots_model4ql, terms = c("location", "design"))
 locdes_plot <- plot(locdes_data)
 # shows predation levels of each design at each location
 
+
 temp_data <- ggpredict(eyespots_model4ql, terms = c("temperature"))
 
 temp_plot<- plot(temp_data)
@@ -301,6 +302,8 @@ plot(ml2_coldes)
 
 #________________________----
 # PREDICTIONS ----
+
+emmeans::emmeans(eyespots_model4ql, specs=~location, type="response")
 
 design_tibble <- emmeans::emmeans(eyespots_model4ql, specs=~design, type="response") %>% as_tibble()
 design_table <- design_tibble %>% select(- `df`) %>% 
@@ -432,3 +435,22 @@ loc2_learning_plot <- ggplot() +
 learning_plot <- (loc1_learning_plot+loc2_learning_plot)+
   plot_layout(guides = "collect") 
 
+
+plot <- ggplot(design_tibble, aes(x = design, y = prob)) +
+  # Add points
+  geom_point() +
+  # Add error bars
+  geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), width = 0.2) +
+  # Add vertical line segments for the error bars
+  geom_segment(aes(xend = design, yend = asymp.LCL), linetype = "dotted") +
+  geom_segment(aes(xend = design, yend = asymp.UCL), linetype = "dotted") +
+  # Add labels for error bars
+  geom_text(aes(label = sprintf("%.3f", asymp.UCL), y = asymp.UCL), vjust = -0.5) +
+  geom_text(aes(label = sprintf("%.3f", asymp.LCL), y = asymp.LCL), vjust = 1.5) +
+  # Customize plot aesthetics
+  labs(x = "Design", y = "Probability") +
+  theme_minimal() 
+  
+
+# Print the plot
+des_plot <- print(plot)

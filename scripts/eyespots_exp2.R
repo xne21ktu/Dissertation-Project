@@ -158,12 +158,71 @@ performance::check_model(eyespots2_model3ql, check = "binned_residuals")
 # does show some overdispersion = more variance than we expect from the prediction of the mean by our model.
 
 drop1(eyespots2_model3ql, test="Chisq")
+
+eyespots2_model4 <- glm(predation~design+collection+location+collection*location, data = eyespots2,
+                        family = "binomial"(link=logit))
+summary(eyespots2_model4)
+drop1(eyespots2_model4, test="Chisq")
+
+# does not seem to be an interaction between collection and location,
+# suggesting learning is not different between locations
+# Due to the significant relationship between collection and predation,
+# learning does seem to be influencing predation
+
+# creating a model for each location
+# As seen earlier when calculating the % of predation for each design at each location,
+# design 1 did show a decreased predation rate in location 1, so I am interested to see,
+# if there is a significant difference between designs at this location
+df2_location1 <- filter(.data = eyespots2, location == "1")
+df2_location2 <- filter(.data = eyespots2, location == "2")
+
+
+model2_loc1 <- glm(predation~collection+design, data = df2_location1,
+                   family = "binomial"(link=logit))
+summary(model2_loc1)
+# does show significance for design 3 compared to design 1, and design 2 is not far off (P=0.058)
+coldesl1_data <- ggpredict(model2_loc1, terms = c("collection", "design"))
+coldes1_plot <- plot(coldesl1_data)
+
+
+model2_loc2 <- glm(predation~collection+design, data = df2_location2,
+                   family = "binomial"(link=logit))
+summary(model2_loc2)
+# as expected there is no significant effect of design on predation
+
+coldesl2_data <- ggpredict(model2_loc2, terms = c("collection", "design"))
+coldes2_plot <- plot(coldesl2_data)
+
+locsep_plot <- (coldes1_plot+coldes2_plot)+
+  plot_layout(guides = "collect") 
+# these differences suggest that the effect of design on predation may vary across different locations.
+
+eyespots2_model5ql <- glm(predation~design+collection+location+design*location, data = eyespots2,
+                          family = "quasibinomial"(link=logit))
+summary(eyespots2_model5ql)
+drop1(eyespots2_model5ql, test="Chisq")
+
+#it appears that the effect of design on predation rates does not vary significantly between the two locations,
+#despite differences in the significance of design in the individual models for each location. 
+#drop1 also suggests removal of interaction term. Which is suprising,
+# I assume that although there is a difference between design 1 and designs 2/3 at location 1,
+# it is not big enough for there to be an interaction between location and design
+
+emmeans::emmeans(eyespots2_model5ql, specs= pairwise~design|location, type = 'response')
+# p value around 0.1 suggesting there may be something going on between design 1 and 2/3 and
+# probabilities support this. No statistically significant evidence but suggest future work
+
+locdes3_data <- ggpredict(eyespots2_model5ql, terms = c("location", "design"))
+locdes3_plot <- plot(locdes3_data)
+
+#________________________----
+# PREDICTIONS ----
 emmeans::emmeans(eyespots2_model3ql, specs= pairwise~design, type = 'response')
 
+emmeans::emmeans(eyespots2_model3ql, specs=~location, type="response")
 
-
-design_tibble <- emmeans::emmeans(eyespots2_model3ql, specs=~design, type="response") %>% as_tibble()
-design_table <- design_tibble %>% select(- `df`) %>% 
+design_tibble2 <- emmeans::emmeans(eyespots2_model3ql, specs=~design, type="response") %>% as_tibble()
+design_table2 <- design_tibble2 %>% select(- `df`) %>% 
   mutate_if(is.numeric, round, 4) %>% 
   kbl(col.names = c("Design",
                     "Probability",
@@ -191,58 +250,76 @@ exp2_model <- eyespots2_model3ql %>% broom::tidy(conf.int = T) %>%
 locdes2_data <- ggpredict(eyespots2_model3ql, terms = c("location", "design"))
 locdes2_plot <- plot(locdes2_data)
 
-eyespots2_model4 <- glm(predation~design+collection+location+collection*location, data = eyespots2,
-                        family = "binomial"(link=logit))
-summary(eyespots2_model4)
-drop1(eyespots2_model4, test="Chisq")
+augment_glm <- function(mod, predict = NULL){
+  fam <- family(mod)
+  ilink <- fam$linkinv
+  
+  broom::augment(mod, newdata = predict, se_fit=T)%>%
+    mutate(.lower = ilink(.fitted - 1.96*.se.fit),
+           .upper = ilink(.fitted + 1.96*.se.fit), 
+           .fitted=ilink(.fitted))
+}
 
-# does not seem to be an interaction between collection and location,
-# suggesting learning is not different between locations
-# Due to the significant relationship between collection and predation,
-# learning does seem to be influencing predation
+augment_glm(eyespots2_model3ql)
 
-# creating a model for each location
-# As seen earlier when calculating the % of predation for each design at each location,
-# design 1 did show a decreased predation rate in location 1, so I am interested to see,
-# if there is a significant difference between designs at this location
-df2_location1 <- filter(.data = eyespots2, location == "1")
-df2_location2 <- filter(.data = eyespots2, location == "2")
+augmented_data2 <- augment_glm(eyespots2_model3ql)
 
+# Filter data by location
+augdata2_loc1 <- filter(augmented_data2, location == 1)
+augdata2_loc2 <- filter(augmented_data2, location == 2)
 
-model2_loc1 <- glm(predation~collection+design, data = df2_location1,
-                  family = "binomial"(link=logit))
-summary(model2_loc1)
-# does show significance for design 3 compared to design 1, and design 2 is not far off (P=0.058)
-coldesl1_data <- ggpredict(model2_loc1, terms = c("collection", "design"))
-coldes1_plot <- plot(coldesl1_data)
+design1_loc1b <- filter(augdata2_loc1, design == 1)
+design2_loc1b <- filter(augdata2_loc1, design == 2)
+design3_loc1b <- filter(augdata2_loc1, design == 3)
 
+# Plot predicted probabilities for each design type
+loc1_learning_plot2 <- ggplot() +
+  geom_line(data = design1_loc1b, aes(x = collection, y = .fitted), color = "blue") +
+  geom_ribbon(data = design1_loc1b, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "blue") +
+  geom_line(data = design2_loc1b, aes(x = collection, y = .fitted), color = "red") +
+  geom_ribbon(data = design2_loc1b, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "red") +
+  geom_line(data = design3_loc1b, aes(x = collection, y = .fitted), color = "green") +
+  geom_ribbon(data = design3_loc1b, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "green") +
+  labs(x = "Time (collection event)", y = "Probability of Predation", color = "Design Type") +
+  scale_color_manual(values = c("blue", "red", "green")) +
+  theme_minimal()
 
-model2_loc2 <- glm(predation~collection+design, data = df2_location2,
-                   family = "binomial"(link=logit))
-summary(model2_loc2)
-# as expected there is no significant effect of design on predation
+# Filter data by design type
+design1_loc2b <- filter(augdata2_loc2, design == 1)
+design2_loc2b <- filter(augdata2_loc2, design == 2)
+design3_loc2b <- filter(augdata2_loc2, design == 3)
 
-coldesl2_data <- ggpredict(model2_loc2, terms = c("collection", "design"))
-coldes2_plot <- plot(coldesl2_data)
+# Plot predicted probabilities for each design type
+loc2_learning_plot2 <- ggplot() +
+  geom_line(data = design1_loc2b, aes(x = collection, y = .fitted), color = "blue") +
+  geom_ribbon(data = design1_loc2b, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "blue") +
+  geom_line(data = design2_loc2b, aes(x = collection, y = .fitted), color = "red") +
+  geom_ribbon(data = design2_loc2b, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "red") +
+  geom_line(data = design3_loc2b, aes(x = collection, y = .fitted), color = "green") +
+  geom_ribbon(data = design3_loc2b, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "green") +
+  labs(x = "Time (collection event)", y = "Probability of Predation", color = "Design Type") +
+  scale_color_manual(values = c("blue", "red", "green")) +
+  theme_minimal()
 
-locsep_plot <- (coldes1_plot+coldes2_plot)+
+learning_plot2 <- (loc1_learning_plot2+loc2_learning_plot2)+
   plot_layout(guides = "collect") 
-# these differences suggest that the effect of design on predation may vary across different locations.
 
-eyespots2_model5ql <- glm(predation~design+collection+location+design*location, data = eyespots2,
-                        family = "quasibinomial"(link=logit))
-summary(eyespots2_model5ql)
-drop1(eyespots2_model5ql, test="Chisq")
 
-#it appears that the effect of design on predation rates does not vary significantly between the two locations,
-#despite differences in the significance of design in the individual models for each location. 
-#drop1 also suggests removal of interaction term. Which is suprising,
-# I assume that although there is a difference between design 1 and designs 2/3 at location 1,
-# it is not big enough for there to be an interaction between location and design
+plot2 <- ggplot(design_tibble2, aes(x = design, y = prob)) +
+  # Add points
+  geom_point() +
+  # Add error bars
+  geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), width = 0.2) +
+  # Add vertical line segments for the error bars
+  geom_segment(aes(xend = design, yend = asymp.LCL), linetype = "dotted") +
+  geom_segment(aes(xend = design, yend = asymp.UCL), linetype = "dotted") +
+  # Add labels for error bars
+  geom_text(aes(label = sprintf("%.3f", asymp.UCL), y = asymp.UCL), vjust = -0.5) +
+  geom_text(aes(label = sprintf("%.3f", asymp.LCL), y = asymp.LCL), vjust = 1.5) +
+  # Customize plot aesthetics
+  labs(x = "Design", y = "Probability") +
+  theme_minimal() 
 
-emmeans::emmeans(eyespots2_model5ql, specs= pairwise~design|location, type = 'response')
-# p value around 0.1 suggesting there may be something going on between design 1 and 2/3 and
-# probabilities support this. No statistically significant evidence but suggest future work
 
-locdes3_data <- ggpredict(eyespots2_model5ql, terms = c("design", "location"))
-locdes3_plot <- plot(locdes3_data)
+# Print the plot
+des_plot2 <- print(plot2)
