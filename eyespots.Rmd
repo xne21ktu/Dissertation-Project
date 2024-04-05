@@ -1,6 +1,6 @@
 ---
 title: "Report"
-output: html_document
+output: word_document
 
 ---
 
@@ -26,14 +26,13 @@ source("scripts/eyespots_exp1.R")
 
 ## Results:
 
-The ultimate question addressed in this report is does the eyespot ‘sparkle’ decrease the predation rate of lepidoptera. For each experiment, I used a binomial logit-link generalized linear model, with quasi-likelihoods to account for overdispersion, to analyse the effect of design, location, time (collection) and temperature on the likelihood of predation. An interaction term between location and collection was included in the model for experiment 1. All analyses and data cleaning were carried out in R (ver 4.3.3) with the tidyverse range of packages (Wickham et al, 2019), car (Fox et al, 2023), patchwork (Lin et al, 2024) and ggeffects (Lüdecke et al, 2024) packages. Model residuals were checked with the performance package (Lüdecke et al, 2021). Summary tables were produced with broom (Robinson et al 2022) and KableExtra (Zhu, 2020) packages. In the analysis, the term collection refers to the event of collecting in the models to count predation levels. This happened 9 times throughout each experiment. Collection is used as a reference for time into the experiment in analyses and is used as a numerical variable, so that any potential effects of learning can be investigated. 
+The ultimate question addressed in this report is does the eyespot ‘sparkle’ decrease the predation rate of lepidoptera. For each experiment, I used a binomial logit-link generalized linear model, with quasi-likelihoods to account for overdispersion, to analyse the effect of design, time (collection), temperature, and location (excluding experiment 3) on the likelihood of predation. An interaction term between location and collection was included in the model for experiment 1. All analyses and data cleaning were carried out in R (ver 4.3.3) with the tidyverse range of packages (Wickham et al, 2019), car (Fox et al, 2023), patchwork (Lin et al, 2024) and ggeffects (Lüdecke et al, 2024) packages. Model residuals were checked with the performance package (Lüdecke et al, 2021). Summary tables were produced with broom (Robinson et al 2022) and KableExtra (Zhu, 2020) packages. In the analysis, the term collection refers to the event of collecting in the models to count predation levels. This happened 9 times throughout each experiment. Collection is used as a reference for time into the experiment in analyses and is used as a numerical variable, so that any potential effects of learning can be investigated. 
 
-
-# Influence of Design on Predation:
 
 ## Experiment 1:
+# Influence of Design on Predation:
 
-The main hypothesis of this experiment was that design 3 (2 eyespots) would show the least amount of predation compared to designs 1 (blank) and 2 (1 eyespot), with blank models showing the greatest likelihood of predation. Previous research has shown that blank models show a significantly greater probability of predation compared to spotted models (Stevens et al, 2007) . 
+The main hypothesis of this experiment was that design 3 (2 eyespots) would show the least amount of predation compared to designs 1 (blank) and 2 (1 eyespot), with blank models showing the greatest likelihood of predation. 
 
 ```{r echo=FALSE, fig.asp=0.8, fig.pos="H", fig.width=7, warning=FALSE, message=FALSE}
 
@@ -51,14 +50,14 @@ design_table %>% kable_styling(latex_options = "HOLD_position")
 ```
 **Table 2** Blank models predated significantly more than eyespot models. Design 1 (blank), design 2 (1 eyespot), design 3 (2 eyespots). Table shows mean probabilities of predation across three designs of artificial Lepidoptera left exposed for 48 hours. Values obtained using emmeans function, which analysed a binomial logit-link generalized linear model (Table 1). The SE column represents standard error, and lower and upper 95% confidence intervals are shown.  
 
-Post hoc analysis showed that these differences were statistically significant for blank models compared to 1 eyespot models (Tukey test:zInf = 6.43, P = <0.0001) and 2 eyespot models (zInf = 7.41, P = <0.0001). The analysis showed that the odds of predation for blank models was 3.2 times higher than design 2 (SE = 0.58, z = 6.43, p <0.0001) and 3.8 times higher than design 3 (SE = 0.69, z = 7.41, p <0.0001). There was no overall evidence of a difference between 1 eyespot models and 2 eyespot models (SE = 0.19, z = 1.08, p = 0.529). 
+Post hoc analysis showed that these differences were statistically significant for blank models compared to 1 eyespot models (Tukey test:zInf = 6.43, P = <0.0001) and 2 eyespot models (zInf = 7.41, P = <0.0001). The analysis showed that the odds of predation for blank models was 3.2 times higher than 1 eyespot models (SE = 0.58, z = 6.43, p <0.0001) and 3.8 times higher than 2 eyespot models (SE = 0.69, z = 7.41, p <0.0001). There was no overall evidence of a difference between 1 eyespot models and 2 eyespot models (SE = 0.19, z = 1.08, p = 0.529). 
 
 ```{r fig.asp = 0.8, fig.width = 10, echo=FALSE, warning=FALSE, message = FALSE}
 
 des_plot
 
 ```
-**Figure 1:** Probability of predation higher for blank design. Plot shows mean probabilities of predation across three designs of artificial Lepidoptera left exposed for 48 hours. Design 1 (blank), design 2(1 eyespot) and design 3 (2 eyespots). Y axis represents predicted probabilities of predation, calculated using the emmeans function which analysed a binomial logit-link generalized linear model (Table 1). Solid points represent mean probabilities. Horizontal lines and labels represent upper and lower 95% confidence intervals. X axis represent the three designs. 
+**Figure 1:** Probability of predation higher for blank design. Plot shows mean probabilities of predation across three designs of artificial Lepidoptera left exposed for 48 hours. Design 1 (blank), design 2(1 eyespot) and design 3 (2 eyespots). Y axis represents predicted probabilities of predation, calculated using the emmeans function which analysed a binomial logit-link generalized linear model (Table 1). Solid points represent mean probabilities. Horizontal lines and labels represent upper and lower 95% confidence intervals. X axis represents the three designs. 
 
 ```{r include=FALSE}
 
@@ -66,9 +65,45 @@ source("scripts/eyespots_exp2.R")
 
 ```
 
-## Experiment 2:
+## Influence of Learning on Predation: 
 
-The main hypothesis for this experiment was that design 1 ('sparkle' within eyespots) would show the lowest likelihood of predation, and that design 3 (control - 2 eyespots, no 'sparkle') would show the highest likelihood of predation compared to design 1 and design 2 ('sparkle' outside of eyespots). Previous research concluded that models with eyespots containing a 'sparkle' have a lower predation rate compared to eyespots without (Blut et al, 2012). It was thought that models with 'sparkles' outside of the eyespots would show lower predation rate compared to the control because of an extra level of conspicuousness. 
+It was hypothesised that the level of predation would increase over the experimental period (including all experiments). To measure this, 'collection' was used as a reference for time into the experiment. It was plausible that the effects of learning could be different between the two locations therefore an interaction term between collection and location was included. There was significant evidence of an interaction between collection and location (χ² 1,1050 = 54.81, P = <0.001). I found a significant positive relationship between collection and probability of predation at location 2 (logit-odds = 0.48 [95% CI: 0.35 - 0.62], z = 6.86, d.f = 1050, P = <0.0001). In contrast, at location 1, the effect of collection on predation was not statistically significant. This suggests that learning occurred in birds at location 2 but not location 1. It is worth noting that there was an increase in probability of predation after collection 2 at location 1.
+
+```{r fig.asp = 0.8, fig.width = 10, echo=FALSE, warning=FALSE, message = FALSE}
+
+learning_plot
+
+```
+**Figure 2:** The impact of learning on predation. The plot shows the relationship between probability of predation and time into the experiment at each location (left = location 1, right = location 2). Y axis represents probability of predation and x axis represents collection event number. Blue represents design 1 (blank), red represents design 2 (1 eyespot) and green represents design 3 (2 eyespots). Artificial Lepidopteran models were exposed to predators in 48 hour periods across 9 collection events. The shaded zones represent the 95% confidence intervals of predictions for each design. Predictions were made using the augment_glm function which analysed a binomial logit-link generalized linear model.
+
+## Influence of location on Predation
+
+Prior to experiment 1, it was hypothesised that the level of predation between the two locations would follow the same pattern because predation levels were similar during the preliminary experiment. Model analysis indicated that likelihood of predation was significantly lower in location 2 compared to location 1 (logit-odds: -1.76 [95% CI: -2.44 - -1.09], z = -5.12, df = 1050, P = <0.0001). However, the predicted probabilities of predation for models in each location (figure 5) show that location 2 had a much higher probability of predation. Predicted probability of predation in location 1 was 62.8% [58.5 - 66.9%], compared to 76.2% [71.4 - 80.4%] in location 2. This discrepancy can be attributed to the interaction effect between collection and location in the model.
+
+```{r fig.asp = 0.8, fig.width = 10, echo=FALSE, warning=FALSE, message = FALSE}
+
+locdes_exp1
+
+```
+**Figure 3** Probability of predation higher for all three designs at location 2. Design 1 (blank), design 2 (1 eyespot), design 3 (control - 2 eyespots). Plot shows the mean probability of predation for three designs of artificial lepidoptera at two locations, left exposed for 48 hours. Y axis represents predation probability and x axis represents design. Colours represent location. Probability predictions made using the emmeans function which analysed a binomial logit-link generalized linear model(Table 1). Solid points represent mean probabilities, horizontal lines and labels represent upper and lower 95% confidence intervals.
+
+
+## Influence of Temperature on Predation:
+
+Model analysis showed a significant negative relationship between temperature and probability of predation (logit-odds = -0.21 [95% CI: -0.32 - -0.10], z = -3.85, df = 1050, P = <0.0001). 
+
+```{r fig.asp = 0.8, fig.width = 10, echo=FALSE, warning=FALSE, message = FALSE}
+
+temp_plot
+
+```
+**Figure 4** Probability of predation decreases with increases in temperature for experiment 1. Probability of predation decreases from 84% (95% CI: 78 - 88%) at 9 degrees celsius to 69% (95% CI: 60 - 76%) at 13 degrees celsius. Black line shows this decrease and grey area represents 95% confidence intervals of predictions. Y axis represents the predicted probabilities of predation, obtained using the ggpredict function, which analysed a binomial logit-link generalized linear model (Table 1).
+
+
+# Experiment 2:
+## Influence of Design on Predation:
+
+The main hypothesis for this experiment was that design 1 ('sparkle' within eyespots) would show the lowest likelihood of predation, and that design 3 (control - 2 eyespots, no 'sparkle') would show the highest likelihood of predation compared to design 1 and design 2 ('sparkle' outside of eyespots). It was hypothesised that models with 'sparkles' outside of the eyespots would show lower predation rate compared to the control. 
 
 ```{r echo=FALSE, fig.asp=0.8, fig.pos="H", fig.width=7, warning=FALSE, message=FALSE}
 
@@ -86,23 +121,23 @@ design_table2 %>% kable_styling(latex_options = "HOLD_position")
 ```
 **Table 4:** Models with 'sparkles' within eyespots show slightly lower probability of predation, but this difference is not significant. Design 1 ('sparkle' within eyespots), design 2 ('sparkle' outside of eyespots), design 3 (control). Table shows mean probabilities of predation across three designs of artificial Lepidoptera left exposed for 24 hours. Values obtained using emmeans function, which analysed a binomial logit-link generalized linear model (Table 3). The SE column represents standard error, and lower and upper 95% confidence intervals are shown.
 
-A descriptive summary of the raw data indicated there may be a difference in predation levels of models with eyespots containing a 'sparkle' compared to other designs at location 1, but in location 2, predation levels were almost equal for all designs. Due to this observation, an interaction term between location and design was added to the model. The indication of a potential interaction was supported by the predicted probabilities of predation in each location (figure 2).
+A descriptive summary of the raw data indicated there may be a difference in predation levels for models with eyespots containing a 'sparkle', compared to other designs at location 1, but in location 2, predation levels were almost equal for all designs. Due to this observation, an interaction term between location and design was added to the model. The indication of a potential interaction was supported by the predicted probabilities of predation in each location (figure 5).
 
 ```{r fig.asp = 0.8, fig.width = 10, echo=FALSE, warning=FALSE, message = FALSE}
 
 locdes_exp2
 
 ```
-**Figure 2:** Models with eyespots containing 'sparkle' predicted less likely to be predated, but only in location 1. Design 1 ('sparkle' within eyespots), design 2 ('sparkle' outside of eyespots), design 3 (control). Despite the visual difference, it is not statistically significant. Plot shows the mean probability of predation for three designs of artificial lepidoptera at two locations, left exposed for 24 hours. Y axis represents predation probability and x axis represents design. Colours represent location. Probability predictions made using the emmeans function which analysed a binomial logit-link generalized linear model, different to that shown in Table 3 due to the addition of an interaction term between location and design. Analysis of the model did not show a significant effect of the interaction on probability of predation.
+**Figure 5:** Models with eyespots containing 'sparkle' predicted less likely to be predated, but only in location 1. Design 1 ('sparkle' within eyespots), design 2 ('sparkle' outside of eyespots), design 3 (control). Despite the visual difference, it is not statistically significant. Plot shows the mean probability of predation for three designs of artificial lepidoptera at two locations, left exposed for 24 hours. Y axis represents predation probability and x axis represents design. Colours represent location. Probability predictions made using the emmeans function which analysed a binomial logit-link generalized linear model, different to that shown in Table 3 due to the addition of an interaction term between location and design. Analysis of the model did not show a significant effect of the interaction on probability of predation.
 
-Adding the interaction term enabled pairwise comparisons between design to be made within each location. As expected, post hoc analysis did not show a significant difference in the odds of predation between designs at location 2. In location 1, comparisons between designs did indicate that predation was approximately 0.65 times less likely to occur in models with eyespots containing 'sparkles'. However, these differences were not large enough to be significant (design 1 - design 2: SE = 0.15, z = -1.87, P = 0.15)(design 1 - design 3: SE = 0.14, z = -1.99, P = 0.11). This is supported by the interaction between location and design not having a significant effect on predation (χ² 2,1033 = 2.01, P = 0.37). Predicted probabilities calculated from the final model, with the interaction term removed (Table 3), are shown in figure 3.
+Adding the interaction term enabled pairwise comparisons between design to be made within each location. As expected, post hoc analysis did not show a significant difference in the odds of predation between designs at location 2. In location 1, comparisons between designs did indicate that predation was approximately 0.65 times less likely to occur in models with eyespots containing 'sparkles'. However, these differences were not large enough to be significant (design 1 - design 2: SE = 0.15, z = -1.87, P = 0.15)(design 1 - design 3: SE = 0.14, z = -1.99, P = 0.11). This is supported by the interaction between location and design not having a significant effect on predation (χ² 2,1033 = 2.01, P = 0.37). Predicted probabilities calculated from the final model, with the interaction term removed (Table 3), are shown in figure 6.
 
 ```{r fig.asp = 0.8, fig.width = 10, echo=FALSE, warning=FALSE, message = FALSE}
 
 des_plot2
 
 ```
-**Figure 3:** Models with 'sparkles' within eyespots show slightly lower probability of predation, but this difference is not significant. Design 1 ('sparkle' within eyespots), design 2 ('sparkle' outside of eyespots), design 3 (control). Plot shows mean probabilities of predation across three designs of artificial Lepidoptera left exposed for 24 hours. Values obtained using emmeans function, which analysed a binomial logit-link generalized linear model (Table 3). Y axis represents predicted probabilities of predation with solid points representing mean probabilities. Horizontal lines and labels represent upper and lower 95% confidence intervals. X axis represent the three designs. 
+**Figure 6:** Models with 'sparkles' within eyespots show slightly lower probability of predation, but this difference is not significant. Design 1 ('sparkle' within eyespots), design 2 ('sparkle' outside of eyespots), design 3 (control). Plot shows mean probabilities of predation across three designs of artificial Lepidoptera left exposed for 24 hours. Values obtained using emmeans function, which analysed a binomial logit-link generalized linear model (Table 3). Y axis represents predicted probabilities of predation with solid points representing mean probabilities. Horizontal lines and labels represent upper and lower 95% confidence intervals. X axis represent the three designs. 
 
 
 ```{r include=FALSE}
@@ -110,17 +145,44 @@ des_plot2
 source("scripts/eyespots_exp3.R")
 
 ```
- 
-# Experiment 3:
 
-The main hypothesis of this experiment was that design 3 (control - 2 eyespots without a 'sparkle') would show the highest likelihood of predation compared to the two 'sparkle' designs. It was hypothesised that design 1 (UV-reflective 'sparkle') would show a lower likelihood of predation compared to design 2 (UV-absorbant 'sparkle') because 'sparkles' in lepidoptera are UV-reflective (Blut et al, 2012). 
+## Influence of Learning on Predation:
+
+There was no significant evidence of an interaction between collection and location (χ² 1,1033 = 0.03, P = 0.86). This indicated that the effect of collection on the likelihood of predation did not differ between locations. Model analysis showed a significant positive relationship between collection and probability of predation (logit-odds = 0.27 [95% CI: 0.22 - 0.33], z = 9.62, df = 1033, P = <0.0001), indicating that the probability of predation increased throughout the experiment, most likely due to learning. 
+
+```{r fig.asp = 0.8, fig.width = 10, echo=FALSE, warning=FALSE, message = FALSE}
+
+learning_plot2
+
+```
+**Figure 7:** The impact of learning on predation shows the same pattern across designs and locations. The plot shows the relationship between probability of predation and time into the experiment at each location (left = location 1, right = location 2). Y axis represents probability of predation and x axis represents collection event number. Blue represents design 1 ('sparkle' within eyespots), red represents design 2 ('sparkle' outside of eyespots) and green represents design 3 (control). Artificial Lepidopteran models were exposed to predators in 24 hour periods across 9 collection events. The shaded zones represent the 95% confidence intervals of predictions for each design. Predictions were made using the augment_glm function which analysed a binomial logit-link generalized linear model(Table 3).
+
+## Influence of Location on Predation:
+
+Model analysis indicated that likelihood of predation was significantly higher in location 2 compared to location 1 (logit-odds: 1.04 [95% CI: 0.77 - 1.32], z = 7.32, df = 1033, P = <0.0001). Predicted probability of predation in location 1 was 49.3% [44.9 - 53.7%], compared to 73.3% [68.9 - 77.3%] in location 2. The previous section described the indication that location may have influenced probability of predation for designs in this experiment (figure 5), however there was no significant evidence of an interaction.
+
+```{r fig.asp = 0.8, fig.width = 10, echo=FALSE, warning=FALSE, message = FALSE}
+
+locdes_exp2a
+
+```
+**Figure 8:** Location 2 shows significantly higher probability of predation. Design 1 ('sparkle' within eyespots), design 2 ('sparkle' outside of eyespots), design 3 (control). Plot shows the mean probability of predation for three designs of artificial lepidoptera at two locations, left exposed for 24 hours. Y axis represents predation probability and x axis represents design. Colours represent location. Solid points represent mean probabilities, horizontal lines and labels represent upper and lower 95% confidence intervals. Probability predictions made using the emmeans function which analysed a binomial logit-link generalized linear model (Table 3).
+
+## Influence of Temperature on Predation:
+
+There was no significant overall effect of temperature on predation in experiment 2 (χ² 1,1033 = 2.79, P = 0.09), and this was removed as a predictor from the final model (Table 3)
+
+# Experiment 3:
+## Influence of Design on Predation:
+
+The main hypothesis of this experiment was that design 3 (control - 2 eyespots without a 'sparkle') would show the highest likelihood of predation compared to the two 'sparkle' designs. It was hypothesised that design 1 (UV-reflective 'sparkle') would show a lower likelihood of predation compared to design 2 (UV-absorbant 'sparkle'). 
 
 ```{r echo=FALSE, fig.asp=0.8, fig.pos="H", fig.width=7, warning=FALSE, message=FALSE}
 
 exp3_model %>% kable_styling(latex_options = "HOLD_position")
 
 ```
-**Table 5** Control model shows significantly higher likelihood of predation compared to model with UV-reflective 'sparkles' within eyespots. Output displaying estimated coefficients with 95% confidence intervals, z-values, and associated p-values from a binomial logit-link generalized linear model assessing the predictors of predation. The predictors include collection, design (3 levels) and temperature.
+**Table 5** Control model shows significantly higher likelihood of predation compared to models with UV-reflective 'sparkles' within eyespots. Output displaying estimated coefficients with 95% confidence intervals, z-values, and associated p-values from a binomial logit-link generalized linear model assessing the predictors of predation. The predictors include collection, design (3 levels) and temperature.
 
 There was a significant overall effect of design on likelihood of predation (χ² 2,1051 = 11.40, P = <0.001), with UV-reflective models showing a mean predation probability of 52.7% [95% CI: 47.3 - 58.1%]. Mean probability of predation for UV-absorbant models was 49.2% [43.8-54.6%], and the highest mean probability of predation was 61.8% for control models [56.5-66.9%].
 
@@ -138,41 +200,19 @@ Post hoc analysis showed that these differences were statistically significant f
 des_plot3
 
 ```
-**Figure 4** 'Sparkle' models predated significantly less than control models, but no significant difference between UV-reflective and UV-absorbant models. Design 1 (UV-reflective), design 2 (UV-absorbant), design 3 (2 eyespots - control). Plot shows probabilities of predation across three designs of artificial Lepidoptera left exposed for 8 hours. Y axis represents predicted probabilities of predation, calculated using the emmeans function which analysed a binomial logit-link generalized linear model (Table 5). Solid points represent mean probabilities. Horizontal lines and labels represent upper and lower 95% confidence intervals. X axis represent the three designs. 
+**Figure 9** 'Sparkle' models predated significantly less than control models, but no significant difference between UV-reflective and UV-absorbant models. Design 1 (UV-reflective), design 2 (UV-absorbant), design 3 (2 eyespots - control). Plot shows probabilities of predation across three designs of artificial Lepidoptera left exposed for 8 hours. Y axis represents predicted probabilities of predation, calculated using the emmeans function which analysed a binomial logit-link generalized linear model (Table 5). Solid points represent mean probabilities. Horizontal lines and labels represent upper and lower 95% confidence intervals. X axis represent the three designs. 
 
-## Influence of location on Predation
+## Influence of Learning on Predation:
 
-# Experiment 1:
-
-Prior to experiment 1, it was hypothesised that the level of predation between the two locations would follow the same pattern because predation levels were similar during the preliminary experiment. There was a significant overall effect of location on likelihood of predation in experiment 1 (). Analysis of the model for experiment 1 showed that likelihood of predation was significantly lower in location 2 compared to location 1 (logit-odds: -1.76 [95% CI: -2.44 - -1.09], z = -5.12, df = 1050, P = <0.0001). Predicted probabilities of predation for models in each location is shown in figure 1.
-
-# Experiment 2:
-
-There was a significant overall effect of location on likelihood of predation in experiment 2 ().  
-
-## Influence of Learning on Predation: 
-
-Previous studies have found that over time birds are capable of learning that the lepidopteran models are fake prey (Blut et al, 2012). It was hypothesised that the level of predation would increase over the experimental period because of this. It was plausible that the effects of learning could be different between the two locations but also between designs, therefore two interaction terms, one between collection and location and the other between collection and design, were included. I found no significant evidence of an interaction between collection and design (χ² 2,1050 = 3.19, P = 0.2) and this was dropped from the model. I did find significant evidence of an interaction between collection and location (χ² 1,1050 = 54.81, P = <0.001). I found a significant positive relationship between collection and probability of predation at location 2 (logit-odds = 0.48 [95% CI: 0.35 - 0.62], z = 6.86, d.f = 1050, P = <0.0001). In contrast, at location 1, the effect of collection on predation was not statistically significant. This suggests that learning occurred in birds at location 2 but not location 1, which could explain the higher level of predation at location 2.
+Model analysis showed a significant positive relationship between collection and probability of predation (logit-odds = 0.20 [95% CI: 0.15 - 0.25], z = 7.65, df = 1051, P = <0.0001), indicating that the probability of predation increased throughout the experiment, most likely due to learning. 
 
 ```{r fig.asp = 0.8, fig.width = 10, echo=FALSE, warning=FALSE, message = FALSE}
 
-learning_plot
+learning_plot3
 
 ```
-**Figure 4:** The impact of learning on predation. The plot shows the relationship between probability of predation and time into the experiment at each location (left = location 1, right = location 2). Y axis represents probability of predation and x axis represents collection event number. Blue represents design 1 (blank), red represents design 2 (1 eyespot) and green represents design 3 (2 eyespots). Artificial Lepidopteran models were exposed to predators in 48 hour periods across 9 collection events. At location 2, predation levels were significantly influenced by collection (or time into the experiment). This indicates that learning significantly influenced the probability of predation at location 2 but not location 1. Despite this, there is an increase in probability of predation after collection 2 at location 1. The shaded zones represent the 95% confidence intervals of predictions for each design. Predictions were made using the augment_glm function which analysed a binomial logit-link generalized linear model.
-
-In experiment 2 ...
+**Figure 10:** The impact of learning on predation shows the same pattern across designs and locations. The plot shows the relationship between probability of predation and time into the experiment. Y axis represents probability of predation and x axis represents collection event number. Blue represents design 1 (UV-reflective 'sparkle'), red represents design 2 (UV-absorbant 'sparkle') and green represents design 3 (control). Artificial Lepidopteran models were exposed to predators in 8 hour periods across 9 collection events. The shaded zones represent the 95% confidence intervals of predictions for each design. Predictions were made using the augment_glm function which analysed a binomial logit-link generalized linear model(Table 5).
 
 ## Influence of Temperature on Predation:
 
-The relationship between temperature and predation rates in birds is complex and can be influenced by a combination of factors including metabolic rate, foraging efficiency, breeding behavior, prey behavior, and habitat availability (Alatalo, R.V., 1982). In experiment 1 model analysis showed a significant negative relationship between temperature and probability of predation (logit-odds = -0.21 [95% CI: -0.32 - -0.10], z = -3.85, df = 1050, P = <0.0001). Figure 2 shows the relationship between temperature and predicted probability of predation in experiment 1.
-
-
-```{r fig.asp = 0.8, fig.width = 10, echo=FALSE, warning=FALSE, message = FALSE}
-
-temp_plot
-
-```
-**Figure 2** Probability of predation decreases with increases in temperature for experiment 1. Probability of predation decreases from 84% (95% CI: 78 - 88%) at 9 degrees celsius to 69% (95% CI: 60 - 76%) at 13 degrees celsius. Black line shows this decrease and grey area represents 95% confidence intervals of predictions. Y axis represents the predicted probabilities of predation, obtained using the ggpredict function, which analysed a binomial logit-link generalized linear model.
-
-In experiment 2 ...
+There was no significant overall effect of temperature on predation in experiment 2 (χ² 1,1051 = 0.13, P = 0.7), and this was removed as a predictor from the final model (Table 5)

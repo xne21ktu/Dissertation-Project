@@ -321,6 +321,8 @@ design_table <- design_tibble %>% select(- `df`) %>%
 emmeans::emmeans(eyespots_model4ql, specs = pairwise ~ design, type='response')
 # no significant difference between designs 2 and 3
 
+locdes_tibble2 <- emmeans::emmeans(eyespots_model4ql, specs=~design|location, type = 'response') %>% as_tibble()
+
 augment_glm <- function(mod, predict = NULL){
   fam <- family(mod)
   ilink <- fam$linkinv
@@ -454,3 +456,22 @@ plot <- ggplot(design_tibble, aes(x = design, y = prob)) +
 
 # Print the plot
 des_plot <- print(plot)
+
+plot4 <- ggplot(locdes_tibble2, aes(x = design, y = prob, color = location)) +
+  # Add points
+  geom_point() +
+  # Add error bars
+  geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), width = 0.2) +
+  # Add vertical line segments for the error bars
+  geom_segment(aes(xend = design, yend = asymp.LCL), linetype = "dotted") +
+  geom_segment(aes(xend = design, yend = asymp.UCL), linetype = "dotted") +
+  # Add labels for error bars
+  geom_text(aes(label = sprintf("%.3f", asymp.UCL), y = asymp.UCL), vjust = -0.5, hjust = 1) +
+  geom_text(aes(label = sprintf("%.3f", asymp.LCL), y = asymp.LCL), vjust = 1.5, hjust = -0.25) +
+  # Customize plot aesthetics
+  labs(x = "Design", y = "Probability", color = "Location") +
+  theme_minimal() 
+
+
+# Print the plot
+locdes_exp1 <- print(plot4)

@@ -117,7 +117,7 @@ eyespots3_model3 <- glm(predation~design+collection, data = eyespots3,
 summary(eyespots3_model3)   
 performance::check_model(eyespots3_model3, check = "binned_residuals")
 
-
+broom::tidy(eyespots3_model3, conf.int=T)
 drop1(eyespots3_model3, test="Chisq") 
 emmeans::emmeans(eyespots3_model3, specs = pairwise ~ design, type = 'response')
 # overall effect of design on predation is significant
@@ -174,4 +174,33 @@ plot3 <- ggplot(design_tibble3, aes(x = design, y = prob)) +
 des_plot3 <- print(plot3)
 
 
+augment_glm <- function(mod, predict = NULL){
+  fam <- family(mod)
+  ilink <- fam$linkinv
+  
+  broom::augment(mod, newdata = predict, se_fit=T)%>%
+    mutate(.lower = ilink(.fitted - 1.96*.se.fit),
+           .upper = ilink(.fitted + 1.96*.se.fit), 
+           .fitted=ilink(.fitted))
+}
+
+
+augmented_data3 <- augment_glm(eyespots3_model3)
+
+# filter by design
+design1_exp3 <- filter(augmented_data3, design == 1)
+design2_exp3 <- filter(augmented_data3, design == 2)
+design3_exp3 <- filter(augmented_data3, design == 3)
+
+# Plot predicted probabilities for each design type
+learning_plot3 <- ggplot() +
+  geom_line(data = design1_exp3, aes(x = collection, y = .fitted), color = "blue") +
+  geom_ribbon(data = design1_exp3, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "blue") +
+  geom_line(data = design2_exp3, aes(x = collection, y = .fitted), color = "red") +
+  geom_ribbon(data = design2_exp3, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "red") +
+  geom_line(data = design3_exp3, aes(x = collection, y = .fitted), color = "green") +
+  geom_ribbon(data = design3_exp3, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "green") +
+  labs(x = "Time (collection event)", y = "Probability of Predation", color = "Design Type") +
+  scale_color_manual(values = c("blue", "red", "green")) +
+  theme_minimal()
 
