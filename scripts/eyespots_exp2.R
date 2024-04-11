@@ -225,7 +225,7 @@ emmeans::emmeans(eyespots2_model3ql, specs=~location, type="response")
 
 design_tibble2 <- emmeans::emmeans(eyespots2_model3ql, specs=~design, type="response") %>% as_tibble()
 design_table2 <- design_tibble2 %>% select(- `df`) %>% 
-  mutate_if(is.numeric, round, 4) %>% 
+  mutate_if(is.numeric, round, 3) %>% 
   kbl(col.names = c("Design",
                     "Probability",
                     "SE",
@@ -284,6 +284,8 @@ loc1_learning_plot2 <- ggplot() +
   geom_ribbon(data = design3_loc1b, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "green") +
   labs(x = "Time (collection event)", y = "Probability of Predation", color = "Design Type") +
   scale_color_manual(values = c("blue", "red", "green")) +
+  scale_y_continuous(breaks=c(0.2,0.4, 0.6, 0.8, 1.0), limits = c(0, 1)) +
+  scale_x_continuous(breaks=c(1,3,5,7,9)) +
   theme_minimal()
 
 # Filter data by design type
@@ -301,6 +303,7 @@ loc2_learning_plot2 <- ggplot() +
   geom_ribbon(data = design3_loc2b, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "green") +
   labs(x = "Time (collection event)", y = "Probability of Predation", color = "Design Type") +
   scale_color_manual(values = c("blue", "red", "green")) +
+  scale_y_continuous(breaks=c(0.2,0.4, 0.6, 0.8, 1.0), limits = c(0, 1)) +
   theme_minimal()
 
 learning_plot2 <- (loc1_learning_plot2+loc2_learning_plot2)+

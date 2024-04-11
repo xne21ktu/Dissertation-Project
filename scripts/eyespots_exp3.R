@@ -144,7 +144,7 @@ exp3des_plot <- plot(exp3des_data)
 
 design_tibble3 <- emmeans::emmeans(eyespots3_model3, specs=~design, type="response") %>% as_tibble()
 design_table3 <- design_tibble3 %>% select(- `df`) %>% 
-  mutate_if(is.numeric, round, 4) %>% 
+  mutate_if(is.numeric, round, 3) %>% 
   kbl(col.names = c("Design",
                     "Probability",
                     "SE",
@@ -202,5 +202,7 @@ learning_plot3 <- ggplot() +
   geom_ribbon(data = design3_exp3, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "green") +
   labs(x = "Time (collection event)", y = "Probability of Predation", color = "Design Type") +
   scale_color_manual(values = c("blue", "red", "green")) +
+  scale_y_continuous(breaks=c(0.2,0.4, 0.6, 0.8, 1.0), limits = c(0, 1)) +
+  scale_x_continuous(breaks=c(1,3,5,7,9)) +
   theme_minimal()
 

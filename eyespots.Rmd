@@ -1,6 +1,6 @@
 ---
 title: "Report"
-output: word_document
+output: html_document
 
 ---
 
