@@ -111,17 +111,26 @@ eyespots2 %>%
 
 # Can see that location 1 has a lower predation rate but a larger sample size than location 2,
 # which again needs to be mentioned in discussion
-eyespots2_location1c <- eyespots2_location1 %>% mutate(collection = as.factor(collection))
-eyespots2_location1c %>% 
-  ggplot(aes(x=collection,y=predation))+
-  geom_bar(stat = "identity")
+eyespots2_location1$predation <- as.numeric(as.character(eyespots2_location1$predation))
+eyespots2_location2$predation <- as.numeric(as.character(eyespots2_location2$predation))
 
-eyespots2_location2c <- eyespots2_location2 %>% mutate(collection = as.factor(collection))
-eyespots2_location2c %>% 
-  ggplot(aes(x=collection,y=predation))+
-  geom_bar(stat = "identity")
+grouped3 <- aggregate(predation ~ days, data = eyespots2_location1, FUN = sum)
 
-# both locations show an increase in predation from starting collection event
+ggplot(grouped3, aes(x = days, y = predation)) +
+  geom_line() +
+  geom_point() +
+  scale_x_continuous(breaks=c(2, 6, 10, 14, 18))+
+  theme_minimal()
+
+grouped4 <- aggregate(predation ~ days, data = eyespots2_location2, FUN = sum)
+
+ggplot(grouped4, aes(x = days, y = predation)) +
+  geom_line() +
+  geom_point() +
+  scale_x_continuous(breaks=c(4, 8, 12, 16))+
+  theme_minimal()
+
+# both locations show an increase in predation over time
 
 # MODEL ----
 #________________________----
@@ -140,7 +149,7 @@ eyespots2_model1 <- glm(predation~design, data = eyespots2,
 summary(eyespots2_model1)
 # AIC= 1401.1 - increases, suggesting design is not better explaining predation likelihood
 
-eyespots2_model2 <- glm(predation~design+collection+location+temperature+weather, data = eyespots2,
+eyespots2_model2 <- glm(predation~design+days+location+temperature+weather, data = eyespots2,
                        family = "binomial"(link=logit))
 # date is not used because it correlates with collection which is included instead
 
@@ -150,7 +159,7 @@ drop1(eyespots2_model2, test="Chisq")
 
 #remove temperature and weather from model
 
-eyespots2_model3ql <- glm(predation~design+collection+location, data = eyespots2,
+eyespots2_model3ql <- glm(predation~design+days+location, data = eyespots2,
                         family = "quasibinomial"(link=logit))
 summary(eyespots2_model3ql)
 # residual deviance/residual df = 1.2 which indicates overdispersion
@@ -159,14 +168,14 @@ performance::check_model(eyespots2_model3ql, check = "binned_residuals")
 broom::tidy(eyespots2_model3ql, conf.int=T)
 drop1(eyespots2_model3ql, test="Chisq")
 
-eyespots2_model4 <- glm(predation~design+collection+location+collection*location, data = eyespots2,
+eyespots2_model4 <- glm(predation~design+days+location+days*location, data = eyespots2,
                         family = "quasibinomial"(link=logit))
 summary(eyespots2_model4)
 drop1(eyespots2_model4, test="Chisq")
 
-# does not seem to be an interaction between collection and location,
+# does not seem to be an interaction between days and location,
 # suggesting learning is not different between locations
-# Due to the significant relationship between collection and predation,
+# Due to the significant relationship between days and predation,
 # learning does seem to be influencing predation
 
 # creating a model for each location
@@ -177,27 +186,27 @@ df2_location1 <- filter(.data = eyespots2, location == "1")
 df2_location2 <- filter(.data = eyespots2, location == "2")
 
 
-model2_loc1 <- glm(predation~collection+design, data = df2_location1,
+model2_loc1 <- glm(predation~days+design, data = df2_location1,
                    family = "binomial"(link=logit))
 summary(model2_loc1)
 # does show significance for design 3 compared to design 1, and design 2 is not far off (P=0.058)
-coldesl1_data <- ggpredict(model2_loc1, terms = c("collection", "design"))
+coldesl1_data <- ggpredict(model2_loc1, terms = c("days", "design"))
 coldes1_plot <- plot(coldesl1_data)
 
 
-model2_loc2 <- glm(predation~collection+design, data = df2_location2,
+model2_loc2 <- glm(predation~days+design, data = df2_location2,
                    family = "binomial"(link=logit))
 summary(model2_loc2)
 # as expected there is no significant effect of design on predation
 
-coldesl2_data <- ggpredict(model2_loc2, terms = c("collection", "design"))
+coldesl2_data <- ggpredict(model2_loc2, terms = c("days", "design"))
 coldes2_plot <- plot(coldesl2_data)
 
 locsep_plot <- (coldes1_plot+coldes2_plot)+
   plot_layout(guides = "collect") 
 # these differences suggest that the effect of design on predation may vary across different locations.
 
-eyespots2_model5ql <- glm(predation~design+collection+location+design*location, data = eyespots2,
+eyespots2_model5ql <- glm(predation~design+days+location+design*location, data = eyespots2,
                           family = "quasibinomial"(link=logit))
 summary(eyespots2_model5ql)
 drop1(eyespots2_model5ql, test="Chisq")
@@ -276,16 +285,16 @@ design3_loc1b <- filter(augdata2_loc1, design == 3)
 
 # Plot predicted probabilities for each design type
 loc1_learning_plot2 <- ggplot() +
-  geom_line(data = design1_loc1b, aes(x = collection, y = .fitted), color = "blue") +
-  geom_ribbon(data = design1_loc1b, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "blue") +
-  geom_line(data = design2_loc1b, aes(x = collection, y = .fitted), color = "red") +
-  geom_ribbon(data = design2_loc1b, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "red") +
-  geom_line(data = design3_loc1b, aes(x = collection, y = .fitted), color = "green") +
-  geom_ribbon(data = design3_loc1b, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "green") +
-  labs(x = "Time (collection event)", y = "Probability of Predation", color = "Design Type") +
+  geom_line(data = design1_loc1b, aes(x = days, y = .fitted), color = "blue") +
+  geom_ribbon(data = design1_loc1b, aes(x = days, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "blue") +
+  geom_line(data = design2_loc1b, aes(x = days, y = .fitted), color = "red") +
+  geom_ribbon(data = design2_loc1b, aes(x = days, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "red") +
+  geom_line(data = design3_loc1b, aes(x = days, y = .fitted), color = "green") +
+  geom_ribbon(data = design3_loc1b, aes(x = days, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "green") +
+  labs(x = "Time (days)", y = "Probability of Predation", color = "Design Type") +
   scale_color_manual(values = c("blue", "red", "green")) +
   scale_y_continuous(breaks=c(0.2,0.4, 0.6, 0.8, 1.0), limits = c(0, 1)) +
-  scale_x_continuous(breaks=c(1,3,5,7,9)) +
+  scale_x_continuous(breaks=c(2,6,10,14,18)) +
   theme_minimal()
 
 # Filter data by design type
@@ -295,13 +304,13 @@ design3_loc2b <- filter(augdata2_loc2, design == 3)
 
 # Plot predicted probabilities for each design type
 loc2_learning_plot2 <- ggplot() +
-  geom_line(data = design1_loc2b, aes(x = collection, y = .fitted), color = "blue") +
-  geom_ribbon(data = design1_loc2b, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "blue") +
-  geom_line(data = design2_loc2b, aes(x = collection, y = .fitted), color = "red") +
-  geom_ribbon(data = design2_loc2b, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "red") +
-  geom_line(data = design3_loc2b, aes(x = collection, y = .fitted), color = "green") +
-  geom_ribbon(data = design3_loc2b, aes(x = collection, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "green") +
-  labs(x = "Time (collection event)", y = "Probability of Predation", color = "Design Type") +
+  geom_line(data = design1_loc2b, aes(x = days, y = .fitted), color = "blue") +
+  geom_ribbon(data = design1_loc2b, aes(x = days, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "blue") +
+  geom_line(data = design2_loc2b, aes(x = days, y = .fitted), color = "red") +
+  geom_ribbon(data = design2_loc2b, aes(x = days, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "red") +
+  geom_line(data = design3_loc2b, aes(x = days, y = .fitted), color = "green") +
+  geom_ribbon(data = design3_loc2b, aes(x = days, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "green") +
+  labs(x = "Time (days)", y = "Probability of Predation", color = "Design Type") +
   scale_color_manual(values = c("blue", "red", "green")) +
   scale_y_continuous(breaks=c(0.2,0.4, 0.6, 0.8, 1.0), limits = c(0, 1)) +
   theme_minimal()
