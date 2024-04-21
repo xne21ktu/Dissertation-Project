@@ -82,7 +82,7 @@ Prior to experiment 1, it was hypothesised that the level of predation between t
 
 ```{r fig.asp = 0.8, fig.width = 10, echo=FALSE, warning=FALSE, message = FALSE}
 
-locdes_exp1
+loc_exp1
 
 ```
 **Figure 3** Probability of predation higher for all three designs at location 2. Design 1 (blank), design 2 (1 eyespot), design 3 (control - 2 eyespots). Plot shows the mean probability of predation for three designs of artificial lepidoptera at two locations, left exposed for 48 hours. Y axis represents predation probability and x axis represents design. Colours represent location. Probability predictions made using the emmeans function which analysed a binomial logit-link generalized linear model(Table 1). Solid points represent mean probabilities, horizontal lines and labels represent upper and lower 95% confidence intervals.
@@ -125,7 +125,7 @@ A descriptive summary of the raw data indicated there may be a difference in pre
 
 ```{r fig.asp = 0.8, fig.width = 10, echo=FALSE, warning=FALSE, message = FALSE}
 
-locdes_exp2
+loc_exp2
 
 ```
 **Figure 5:** Models with eyespots containing 'sparkle' predicted less likely to be predated, but only in location 1. Design 1 ('sparkle' within eyespots), design 2 ('sparkle' outside of eyespots), design 3 (control). Despite the visual difference, it is not statistically significant. Plot shows the mean probability of predation for three designs of artificial lepidoptera at two locations, left exposed for 24 hours. Y axis represents predation probability and x axis represents design. Colours represent location. Probability predictions made using the emmeans function which analysed a binomial logit-link generalized linear model, different to that shown in Table 3 due to the addition of an interaction term between location and design. Analysis of the model did not show a significant effect of the interaction on probability of predation.
@@ -163,10 +163,11 @@ Model analysis indicated that likelihood of predation was significantly higher i
 
 ```{r fig.asp = 0.8, fig.width = 10, echo=FALSE, warning=FALSE, message = FALSE}
 
-locdes_exp2a
+location_plot
 
 ```
 **Figure 8:** Location 2 shows significantly higher probability of predation. Design 1 ('sparkle' within eyespots), design 2 ('sparkle' outside of eyespots), design 3 (control). Plot shows the mean probability of predation for three designs of artificial lepidoptera at two locations, left exposed for 24 hours. Y axis represents predation probability and x axis represents design. Colours represent location. Solid points represent mean probabilities, horizontal lines and labels represent upper and lower 95% confidence intervals. Probability predictions made using the emmeans function which analysed a binomial logit-link generalized linear model (Table 3).
+
 
 ## Influence of Temperature on Predation:
 
