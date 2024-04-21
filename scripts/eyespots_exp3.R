@@ -167,7 +167,7 @@ plot3 <- ggplot(design_tibble3, aes(x = design, y = prob)) +
   geom_segment(aes(xend = design, yend = asymp.LCL), linetype = "dotted") +
   geom_segment(aes(xend = design, yend = asymp.UCL), linetype = "dotted") +
   # Add labels for error bars
-  geom_text(aes(label = sprintf("%.2f", prob), y = prob), hjust = 1.2) +
+  geom_text(aes(label = sprintf("%.2f", prob), y = prob), hjust = -0.5) +
   labs(x = "Design", y = "Probability of predation") +
   scale_x_discrete(labels = c("UV-reflective 'Sparkle'", "UV-absorbent 'Sparkle'", "Control model"))+
   theme_minimal() 
