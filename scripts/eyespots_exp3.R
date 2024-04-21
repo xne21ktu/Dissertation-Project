@@ -167,10 +167,9 @@ plot3 <- ggplot(design_tibble3, aes(x = design, y = prob)) +
   geom_segment(aes(xend = design, yend = asymp.LCL), linetype = "dotted") +
   geom_segment(aes(xend = design, yend = asymp.UCL), linetype = "dotted") +
   # Add labels for error bars
-  geom_text(aes(label = sprintf("%.3f", asymp.UCL), y = asymp.UCL), vjust = -0.5) +
-  geom_text(aes(label = sprintf("%.3f", asymp.LCL), y = asymp.LCL), vjust = 1.5) +
-  # Customize plot aesthetics
-  labs(x = "Design", y = "Probability") +
+  geom_text(aes(label = sprintf("%.2f", prob), y = prob), hjust = 1.2) +
+  labs(x = "Design", y = "Probability of predation") +
+  scale_x_discrete(labels = c("UV-reflective 'Sparkle'", "UV-absorbent 'Sparkle'", "Control model"))+
   theme_minimal() 
 
 
@@ -204,7 +203,7 @@ learning_plot3 <- ggplot() +
   geom_ribbon(data = design2_exp3, aes(x = day_of_the_exp, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "red") +
   geom_line(data = design3_exp3, aes(x = day_of_the_exp, y = .fitted), color = "green") +
   geom_ribbon(data = design3_exp3, aes(x = day_of_the_exp, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "green") +
-  labs(x = "day of the exp", y = "Probability of Predation", color = "Design Type") +
+  labs(x = "Day of the exp", y = "Probability of Predation", color = "Design Type") +
   scale_color_manual(values = c("blue", "red", "green")) +
   scale_y_continuous(breaks=c(0.2,0.4, 0.6, 0.8, 1.0), limits = c(0, 1)) +
   scale_x_continuous(breaks=c(1,3,5,7,9)) +

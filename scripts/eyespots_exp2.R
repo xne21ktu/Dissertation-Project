@@ -219,7 +219,7 @@ emmeans::emmeans(eyespots2_model5ql, specs= pairwise~design|location, type = 're
 # p value around 0.1 suggesting there may be something going on between design 1 and 2/3 and
 # probabilities support this. No statistically significant evidence but suggest future work
 locdes_tibble <- emmeans::emmeans(eyespots2_model5ql, specs=~design|location, type = 'response') %>% as_tibble()
-locdes_tibble3 <- emmeans::emmeans(eyespots2_model3ql, specs=~design|location, type = 'response') %>% as_tibble()
+loc_tibble2 <- emmeans::emmeans(eyespots2_model3ql, specs=~location, type = 'response') %>% as_tibble()
 locdes3_data <- ggpredict(eyespots2_model5ql, terms = c("location", "design"))
 locdes3_plot <- plot(locdes3_data)
 
@@ -323,10 +323,10 @@ plot2 <- ggplot(design_tibble2, aes(x = design, y = prob)) +
   geom_segment(aes(xend = design, yend = asymp.LCL), linetype = "dotted") +
   geom_segment(aes(xend = design, yend = asymp.UCL), linetype = "dotted") +
   # Add labels for error bars
-  geom_text(aes(label = sprintf("%.3f", asymp.UCL), y = asymp.UCL), vjust = -0.5) +
-  geom_text(aes(label = sprintf("%.3f", asymp.LCL), y = asymp.LCL), vjust = 1.5) +
+  geom_text(aes(label = sprintf("%.2f", prob), y = prob), hjust = 1.2) +
   # Customize plot aesthetics
   labs(x = "Design", y = "Probability") +
+  scale_x_discrete(labels = c("'Sparkle' within eyespots", "'Sparkle' outside eyespots", "Control model"))+
   theme_minimal() 
 
 
@@ -352,21 +352,23 @@ plot3 <- ggplot(locdes_tibble, aes(x = design, y = prob, color = location)) +
 # Print the plot
 locdes_exp2 <- print(plot3)
 
-plot5 <- ggplot(locdes_tibble3, aes(x = design, y = prob, color = location)) +
+plot5 <- ggplot(loc_tibble2, aes(x = location, y = prob)) +
   # Add points
   geom_point() +
   # Add error bars
   geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), width = 0.2) +
   # Add vertical line segments for the error bars
-  geom_segment(aes(xend = design, yend = asymp.LCL), linetype = "dotted") +
-  geom_segment(aes(xend = design, yend = asymp.UCL), linetype = "dotted") +
+  geom_segment(aes(xend = location, yend = asymp.LCL), linetype = "dotted") +
+  geom_segment(aes(xend = location, yend = asymp.UCL), linetype = "dotted") +
   # Add labels for error bars
-  geom_text(aes(label = sprintf("%.3f", asymp.UCL), y = asymp.UCL), vjust = -0.5) +
-  geom_text(aes(label = sprintf("%.3f", asymp.LCL), y = asymp.LCL), vjust = 1.5) +
+  geom_text(aes(label = sprintf("%.2f", prob), y = prob), hjust = 1.2) +
   # Customize plot aesthetics
-  labs(x = "Design", y = "Probability", color = "Location") +
+  labs(x = "Location", y = "Probability of predation") +
   theme_minimal() 
 
 
 # Print the plot
-locdes_exp2a <- print(plot5)
+loc_exp2 <- print(plot5)
+
+location_plot <- (loc_exp1+loc_exp2)+
+  plot_layout(guides = "collect") 

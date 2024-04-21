@@ -258,8 +258,9 @@ locdes_plot <- plot(locdes_data)
 
 temp_data <- ggpredict(eyespots_model4ql, terms = c("temperature"))
 
-temp_plot<- plot(temp_data)
+temp_plot<- plot(temp_data, show_title = FALSE)
 # negative relationship
+
 
 # creating a model for each location
 
@@ -323,7 +324,7 @@ design_table <- design_tibble %>% select(- `df`) %>%
 emmeans::emmeans(eyespots_model4ql, specs = pairwise ~ design, type='response')
 # no significant difference between designs 2 and 3
 
-locdes_tibble2 <- emmeans::emmeans(eyespots_model4ql, specs=~design|location, type = 'response') %>% as_tibble()
+loc_tibble <- emmeans::emmeans(eyespots_model4ql, specs=~location, type = 'response') %>% as_tibble()
 
 augment_glm <- function(mod, predict = NULL){
   fam <- family(mod)
@@ -352,7 +353,7 @@ combined_design_plot <- ggplot() +
   geom_ribbon(data = design2_data, aes(x = day_of_the_exp, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "red") +
   geom_line(data = design3_data, aes(x = day_of_the_exp, y = .fitted), color = "green") +
   geom_ribbon(data = design3_data, aes(x = day_of_the_exp, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "green") +
-  labs(x = "day of the exp", y = "Probability of Predation", color = "Design Type") +
+  labs(x = "Day of the experiment", y = "Probability of Predation", color = "Design Type") +
   scale_color_manual(values = c("blue", "red", "green"))+
   theme_minimal()
 
@@ -415,7 +416,7 @@ loc1_learning_plot <- ggplot() +
   geom_ribbon(data = design2_loc1a, aes(x = day_of_the_exp, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "red") +
   geom_line(data = design3_loc1a, aes(x = day_of_the_exp, y = .fitted), color = "green") +
   geom_ribbon(data = design3_loc1a, aes(x = day_of_the_exp, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "green") +
-  labs(x = "day of the exp", y = "Probability of Predation", color = "Design Type") +
+  labs(x = "Day of the experiment", y = "Probability of Predation", color = "Design Type") +
   scale_color_manual(values = c("blue", "red", "green")) +
   scale_y_continuous(breaks=c(0.2,0.4, 0.6, 0.8, 1.0), limits = c(0, 1)) +
   scale_x_continuous(breaks=c(1,3,5,7,9)) +
@@ -434,7 +435,7 @@ loc2_learning_plot <- ggplot() +
   geom_ribbon(data = design2_loc2a, aes(x = day_of_the_exp, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "red") +
   geom_line(data = design3_loc2a, aes(x = day_of_the_exp, y = .fitted), color = "green") +
   geom_ribbon(data = design3_loc2a, aes(x = day_of_the_exp, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "green") +
-  labs(x = "day of the exp", y = "Probability of Predation", color = "Design Type") +
+  labs(x = "Day of the experiment", y = "Probability of Predation", color = "Design Type") +
   scale_color_manual(values = c("blue", "red", "green")) +
   scale_y_continuous(breaks=c(0.2,0.4, 0.6, 0.8, 1.0), limits = c(0, 1))+
   theme_minimal()
@@ -452,32 +453,31 @@ plot <- ggplot(design_tibble, aes(x = design, y = prob)) +
   # Add vertical line segments for the error bars
   geom_segment(aes(xend = design, yend = asymp.LCL), linetype = "dotted") +
   geom_segment(aes(xend = design, yend = asymp.UCL), linetype = "dotted") +
-  # Add labels for error bars
-  geom_text(aes(label = sprintf("%.3f", asymp.UCL), y = asymp.UCL), vjust = -0.5) +
-  geom_text(aes(label = sprintf("%.3f", asymp.LCL), y = asymp.LCL), vjust = 1.5) +
+  # Add labels for mean
+  geom_text(aes(label = sprintf("%.2f", prob), y = prob), hjust = 1.2) +
   # Customize plot aesthetics
-  labs(x = "Design", y = "Probability") +
+  labs(x = "Design", y = "Probability of Predation") +
+  scale_x_discrete(labels = c("No eyespots", "One eyespot", "Two eyespots"))+
   theme_minimal() 
 
 
 # Print the plot
 des_plot <- print(plot)
 
-plot4 <- ggplot(locdes_tibble2, aes(x = design, y = prob, color = location)) +
+plot4 <- ggplot(loc_tibble, aes(x = location, y = prob)) +
   # Add points
   geom_point() +
   # Add error bars
   geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), width = 0.2) +
   # Add vertical line segments for the error bars
-  geom_segment(aes(xend = design, yend = asymp.LCL), linetype = "dotted") +
-  geom_segment(aes(xend = design, yend = asymp.UCL), linetype = "dotted") +
-  # Add labels for error bars
-  geom_text(aes(label = sprintf("%.3f", asymp.UCL), y = asymp.UCL), vjust = -0.5, hjust = 1) +
-  geom_text(aes(label = sprintf("%.3f", asymp.LCL), y = asymp.LCL), vjust = 1.5, hjust = -0.25) +
+  geom_segment(aes(xend = location, yend = asymp.LCL), linetype = "dotted") +
+  geom_segment(aes(xend = location, yend = asymp.UCL), linetype = "dotted") +
+  # Add labels for means
+  geom_text(aes(label = sprintf("%.2f", prob), y = prob), hjust = 1.2) +
   # Customize plot aesthetics
-  labs(x = "Design", y = "Probability", color = "Location") +
+  labs(x = "Location", y = "Probability of predation") +
   theme_minimal() 
 
 
 # Print the plot
-locdes_exp1 <- print(plot4)
+loc_exp1 <- print(plot4)
