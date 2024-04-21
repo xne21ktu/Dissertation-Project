@@ -449,16 +449,18 @@ plot <- ggplot(design_tibble, aes(x = design, y = prob)) +
   # Add points
   geom_point() +
   # Add error bars
-  geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), width = 0.2) +
+  geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL),colour = "purple", width = 0.2) +
   # Add vertical line segments for the error bars
-  geom_segment(aes(xend = design, yend = asymp.LCL), linetype = "dotted") +
-  geom_segment(aes(xend = design, yend = asymp.UCL), linetype = "dotted") +
+  geom_segment(aes(xend = design, yend = asymp.LCL),colour = "purple", linetype = "solid") +
+  geom_segment(aes(xend = design, yend = asymp.UCL),colour = "purple", linetype = "solid") +
   # Add labels for mean
   geom_text(aes(label = sprintf("%.2f", prob), y = prob), hjust = 1.2) +
-  # Customize plot aesthetics
+  ggtitle(label = "Impact of eyespot number on predation")+
+  theme(plot.title = element_text(hjust = 0.5))+
   labs(x = "Design", y = "Probability of Predation") +
+  scale_y_continuous(breaks = c(0.5, 0.6, 0.7, 0.8, 0.9), limits = c(0.5, 0.9))+
   scale_x_discrete(labels = c("No eyespots", "One eyespot", "Two eyespots"))+
-  theme_minimal() 
+  theme_bw(base_size = 15) 
 
 
 # Print the plot
