@@ -162,15 +162,18 @@ plot3 <- ggplot(design_tibble3, aes(x = design, y = prob)) +
   # Add points
   geom_point() +
   # Add error bars
-  geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), width = 0.2) +
+  geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL),colour = "purple", width = 0.2) +
   # Add vertical line segments for the error bars
-  geom_segment(aes(xend = design, yend = asymp.LCL), linetype = "dotted") +
-  geom_segment(aes(xend = design, yend = asymp.UCL), linetype = "dotted") +
-  # Add labels for error bars
+  geom_segment(aes(xend = design, yend = asymp.LCL),colour = "purple", linetype = "solid") +
+  geom_segment(aes(xend = design, yend = asymp.UCL),colour = "purple", linetype = "solid") +
+  ggtitle(label = "Impact of 'sparkle' UV-properties on predation")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  # Add labels for means
   geom_text(aes(label = sprintf("%.2f", prob), y = prob), hjust = -0.5) +
   labs(x = "Design", y = "Probability of predation") +
+  scale_y_continuous(breaks = c(0.4,0.5, 0.6, 0.7, 0.8), limits = c(0.4, 0.8))+
   scale_x_discrete(labels = c("UV-reflective 'Sparkle'", "UV-absorbent 'Sparkle'", "Control model"))+
-  theme_minimal() 
+  theme_bw(base_size = 15) 
 
 
 # Print the plot
@@ -201,10 +204,14 @@ learning_plot3 <- ggplot() +
   geom_ribbon(data = design1_exp3, aes(x = day_of_the_exp, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "blue") +
   geom_line(data = design2_exp3, aes(x = day_of_the_exp, y = .fitted), color = "red") +
   geom_ribbon(data = design2_exp3, aes(x = day_of_the_exp, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "red") +
-  geom_line(data = design3_exp3, aes(x = day_of_the_exp, y = .fitted), color = "green") +
-  geom_ribbon(data = design3_exp3, aes(x = day_of_the_exp, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "green") +
+  geom_line(data = design3_exp3, aes(x = day_of_the_exp, y = .fitted), color = "grey") +
+  geom_ribbon(data = design3_exp3, aes(x = day_of_the_exp, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "grey") +
+  ggtitle(label = "Predation through time in experiment 3")+
+  theme(plot.title = element_text(hjust = 0.5))+
   labs(x = "Day of the exp", y = "Probability of Predation", color = "Design Type") +
-  scale_color_manual(values = c("blue", "red", "green")) +
+  scale_color_manual(values = c("blue", "red", "grey")) +
   scale_y_continuous(breaks=c(0.2,0.4, 0.6, 0.8, 1.0), limits = c(0, 1)) +
   scale_x_continuous(breaks=c(1,3,5,7,9)) +
-  theme_minimal()
+  theme_bw(base_size = 15)
+
+

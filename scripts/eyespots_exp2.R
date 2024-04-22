@@ -286,11 +286,13 @@ loc1_learning_plot2 <- ggplot() +
   geom_ribbon(data = design2_loc1b, aes(x = day_of_the_exp, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "red") +
   geom_line(data = design3_loc1b, aes(x = day_of_the_exp, y = .fitted), color = "green") +
   geom_ribbon(data = design3_loc1b, aes(x = day_of_the_exp, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "green") +
+  ggtitle(label = "Predation through time at location 1")+
+  theme(plot.title = element_text(hjust = 0.5))+
   labs(x = "day of the exp", y = "Probability of Predation", color = "Design Type") +
   scale_color_manual(values = c("blue", "red", "green")) +
   scale_y_continuous(breaks=c(0.2,0.4, 0.6, 0.8, 1.0), limits = c(0, 1)) +
   scale_x_continuous(breaks=c(1,3,5,7,9)) +
-  theme_minimal()
+  theme_bw(base_size = 15)
 
 # Filter data by design type
 design1_loc2b <- filter(augdata2_loc2, design == 1)
@@ -305,10 +307,12 @@ loc2_learning_plot2 <- ggplot() +
   geom_ribbon(data = design2_loc2b, aes(x = day_of_the_exp, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "red") +
   geom_line(data = design3_loc2b, aes(x = day_of_the_exp, y = .fitted), color = "green") +
   geom_ribbon(data = design3_loc2b, aes(x = day_of_the_exp, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "green") +
+  ggtitle(label = "Predation through time at location 2")+
+  theme(plot.title = element_text(hjust = 0.5))+
   labs(x = "day of the exp", y = "Probability of Predation", color = "Design Type") +
   scale_color_manual(values = c("blue", "red", "green")) +
   scale_y_continuous(breaks=c(0.2,0.4, 0.6, 0.8, 1.0), limits = c(0, 1)) +
-  theme_minimal()
+  theme_bw(base_size = 15)
 
 learning_plot2 <- (loc1_learning_plot2+loc2_learning_plot2)+
   plot_layout(guides = "collect") 
@@ -318,16 +322,19 @@ plot2 <- ggplot(design_tibble2, aes(x = design, y = prob)) +
   # Add points
   geom_point() +
   # Add error bars
-  geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), width = 0.2) +
+  geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL),colour = "purple", width = 0.2) +
   # Add vertical line segments for the error bars
-  geom_segment(aes(xend = design, yend = asymp.LCL), linetype = "dotted") +
-  geom_segment(aes(xend = design, yend = asymp.UCL), linetype = "dotted") +
-  # Add labels for error bars
+  geom_segment(aes(xend = design, yend = asymp.LCL),colour = "purple", linetype = "solid") +
+  geom_segment(aes(xend = design, yend = asymp.UCL),colour = "purple", linetype = "solid") +
+  ggtitle(label = "Impact of 'sparkle' position on predation")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  # Add labels for mean
   geom_text(aes(label = sprintf("%.2f", prob), y = prob), hjust = 1.2) +
   # Customize plot aesthetics
-  labs(x = "Design", y = "Probability") +
+  labs(x = "Design", y = "Probability of predation") +
+  scale_y_continuous(breaks = c(0.4,0.5, 0.6, 0.7, 0.8), limits = c(0.4, 0.8))+
   scale_x_discrete(labels = c("'Sparkle' within eyespots", "'Sparkle' outside eyespots", "Control model"))+
-  theme_minimal() 
+  theme_bw(base_size = 15) 
 
 
 # Print the plot
@@ -356,15 +363,17 @@ plot5 <- ggplot(loc_tibble2, aes(x = location, y = prob)) +
   # Add points
   geom_point() +
   # Add error bars
-  geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL), width = 0.2) +
+  geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL),colour = "purple", width = 0.2) +
   # Add vertical line segments for the error bars
-  geom_segment(aes(xend = location, yend = asymp.LCL), linetype = "dotted") +
-  geom_segment(aes(xend = location, yend = asymp.UCL), linetype = "dotted") +
-  # Add labels for error bars
+  geom_segment(aes(xend = location, yend = asymp.LCL),colour = "purple", linetype = "solid") +
+  geom_segment(aes(xend = location, yend = asymp.UCL),colour = "purple", linetype = "solid") +
+  ggtitle(label = "Mean predation at each location in experiment 2")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  # Add labels for mean
   geom_text(aes(label = sprintf("%.2f", prob), y = prob), hjust = 1.2) +
-  # Customize plot aesthetics
+  scale_y_continuous(breaks = c(0.4, 0.5, 0.6, 0.7, 0.8, 0.9), limits = c(0.4, 0.9))+
   labs(x = "Location", y = "Probability of predation") +
-  theme_minimal() 
+  theme_bw(base_size = 15) 
 
 
 # Print the plot
