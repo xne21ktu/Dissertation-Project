@@ -208,7 +208,7 @@ learning_plot3 <- ggplot() +
   geom_ribbon(data = design3_exp3, aes(x = day_of_the_exp, ymin = .lower, ymax = .upper), alpha = 0.2, fill = "green") +
   ggtitle(label = "Predation through time in experiment 3")+
   theme(plot.title = element_text(hjust = 0.5))+
-  labs(x = "Day of the exp", y = "Probability of Predation", color = "Design Type") +
+  labs(x = "Day of the experiment", y = "Probability of Predation", color = "Design Type") +
   scale_color_manual(values = c("blue", "red", "green")) +
   scale_y_continuous(breaks=c(0.2,0.4, 0.6, 0.8, 1.0), limits = c(0, 1)) +
   scale_x_continuous(breaks=c(1,3,5,7,9)) +
