@@ -69,7 +69,7 @@ source("scripts/eyespots_exp2.R")
 
 It was hypothesised that the level of predation would increase over the experimental period (including all experiments). To measure this, 'collection' was used as a reference for time into the experiment. It was plausible that the effects of learning could be different between the two locations therefore an interaction term between collection and location was included. There was significant evidence of an interaction between collection and location (χ² 1,1050 = 54.81, P = <0.001). I found a significant positive relationship between collection and probability of predation at location 2 (logit-odds = 0.48 [95% CI: 0.35 - 0.62], z = 6.86, d.f = 1050, P = <0.0001). In contrast, at location 1, the effect of collection on predation was not statistically significant. This suggests that learning occurred in birds at location 2 but not location 1. It is worth noting that there was an increase in probability of predation after collection 2 at location 1.
 
-```{r fig.asp = 0.8, fig.width = 10, echo=FALSE, warning=FALSE, message = FALSE}
+```{r fig.asp = 0.8, fig.width = 15, echo=FALSE, warning=FALSE, message = FALSE}
 
 learning_plot
 
@@ -150,7 +150,7 @@ source("scripts/eyespots_exp3.R")
 
 There was no significant evidence of an interaction between collection and location (χ² 1,1033 = 0.03, P = 0.86). This indicated that the effect of collection on the likelihood of predation did not differ between locations. Model analysis showed a significant positive relationship between collection and probability of predation (logit-odds = 0.27 [95% CI: 0.22 - 0.33], z = 9.62, df = 1033, P = <0.0001), indicating that the probability of predation increased throughout the experiment, most likely due to learning. 
 
-```{r fig.asp = 0.8, fig.width = 10, echo=FALSE, warning=FALSE, message = FALSE}
+```{r fig.asp = 0.8, fig.width = 15, echo=FALSE, warning=FALSE, message = FALSE}
 
 learning_plot2
 
@@ -161,7 +161,7 @@ learning_plot2
 
 Model analysis indicated that likelihood of predation was significantly higher in location 2 compared to location 1 (logit-odds: 1.04 [95% CI: 0.77 - 1.32], z = 7.32, df = 1033, P = <0.0001). Predicted probability of predation in location 1 was 49.3% [44.9 - 53.7%], compared to 73.3% [68.9 - 77.3%] in location 2. The previous section described the indication that location may have influenced probability of predation for designs in this experiment (figure 5), however there was no significant evidence of an interaction.
 
-```{r fig.asp = 0.8, fig.width = 10, echo=FALSE, warning=FALSE, message = FALSE}
+```{r fig.asp = 0.8, fig.width = 15, echo=FALSE, warning=FALSE, message = FALSE}
 
 location_plot
 
